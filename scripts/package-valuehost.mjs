@@ -83,7 +83,14 @@ await cp(join(root, 'database/migrations'), join(backend, 'database/migrations')
 const spa = (extra = '') =>
   `Options -Indexes\nDirectoryIndex index.html\n<IfModule mod_rewrite.c>\nRewriteEngine On\nRewriteCond %{HTTPS} !=on\nRewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]\nRewriteCond %{REQUEST_FILENAME} !-f\nRewriteCond %{REQUEST_FILENAME} !-d\nRewriteRule ^ index.html [L]\n</IfModule>\n<IfModule mod_headers.c>\nHeader set Referrer-Policy "no-referrer"\nHeader set X-Content-Type-Options "nosniff"\n${extra}<FilesMatch "\\.html$">\nHeader set Cache-Control "no-cache"\n</FilesMatch>\n<FilesMatch "\\.(js|css|woff2?|png|jpg|svg|mp4)$">\nHeader set Cache-Control "public, max-age=604800"\n</FilesMatch>\n</IfModule>\n`;
 await cp(join(root, 'apps/mobile/dist'), join(destination, 'web'), { recursive: true });
-await writeFile(join(destination, 'web/.htaccess'), spa());
+// O endereço principal abre a apresentação direto no servidor (sem depender do JavaScript da página).
+await writeFile(
+  join(destination, 'web/.htaccess'),
+  spa().replace(
+    'RewriteCond %{REQUEST_FILENAME} !-f',
+    'RewriteRule ^$ /proposta/ [R=302,L]\nRewriteCond %{REQUEST_FILENAME} !-f',
+  ),
+);
 await cp(join(root, 'apps/admin/dist'), join(destination, 'painel'), { recursive: true });
 await writeFile(
   join(destination, 'painel/.htaccess'),

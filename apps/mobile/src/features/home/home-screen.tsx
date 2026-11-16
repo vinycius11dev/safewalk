@@ -46,6 +46,7 @@ import { mergeAccumulatedFeatures } from '@/features/maps/accumulated-features';
 import { MapIconLegend } from '@/features/maps/map-icon-legend';
 import { createHomeStyles } from './home.styles';
 import { useClock } from '@/hooks/use-clock';
+import { MapConsentPrompt } from '@/features/maps/map-consent-prompt';
 
 /** Altura do painel aberto do protótipo; minimizado fica só o título. */
 const SHEET_MAX_HEIGHT = 344;
@@ -424,11 +425,12 @@ export function HomeScreen() {
               </View>
             ) : !consent.data?.enabled ? (
               <>
-                <AppText style={s.summary}>
-                  Ative o mapa para explorar endereços, trajetos e informações públicas da região.
-                </AppText>
                 <ErrorNotice error={consent.error} />
-                <Button label="Ativar mapa e rotas" onPress={() => router.push('/servicos-mapa')} />
+                <MapConsentPrompt
+                  title="Ative o mapa"
+                  description="Para explorar endereços, rotas a pé e informações públicas da região, enviamos os pontos consultados aos serviços de mapa. Seu nome, telefone e e-mail não são enviados, e o GPS só liga quando você pedir."
+                  actionLabel="Ativar mapa e rotas"
+                />
               </>
             ) : (
               <>

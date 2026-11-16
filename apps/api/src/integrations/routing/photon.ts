@@ -49,13 +49,12 @@ export function parsePhoton(payload: unknown): GeocodingPlace[] {
         ]
       : null;
     const street = [p.street, p.housenumber].filter(Boolean).join(', ');
+    // O país fica de fora: a busca é limitada à região de São Paulo e o Photon o devolve em inglês.
     return {
       id: `photon:${p.osm_type}:${p.osm_id}`,
       name: (p.name || street || p.city || 'Local no mapa').slice(0, 300),
       address: [
-        ...new Set(
-          [p.name, street, p.district, p.city, p.state, p.postcode, p.country].filter(Boolean),
-        ),
+        ...new Set([p.name, street, p.district, p.city, p.state, p.postcode].filter(Boolean)),
       ]
         .join(' · ')
         .slice(0, 1000),

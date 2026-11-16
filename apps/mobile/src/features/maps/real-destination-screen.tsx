@@ -12,6 +12,7 @@ import { useMapConsent, useReverseAddress } from './use-map-data';
 import { useMapJourney } from './use-map-journey';
 import { RealSearchScreen } from './real-search-screen';
 import { createRealDestinationStyles } from './real-destination-screen.styles';
+import { MapConsentPrompt } from './map-consent-prompt';
 
 export function RealDestinationScreen() {
   const { modo } = useLocalSearchParams<{ modo?: string }>();
@@ -137,14 +138,7 @@ function MapDestinationScreen() {
           <View style={s.blocked}>
             {consent.isPending && <ActivityIndicator color={colors.primary} />}
             <ErrorNotice error={consent.error} />
-            <AppText variant="heading">Ative os serviços para usar o mapa real.</AppText>
-            <AppText tone="muted">
-              A consulta do mapa e do endereço escolhido usa provedores externos.
-            </AppText>
-            <Button
-              label="Revisar serviços do mapa"
-              onPress={() => router.push('/servicos-mapa')}
-            />
+            <MapConsentPrompt title="Ative o mapa para escolher o ponto" />
           </View>
         )}
       </Screen>

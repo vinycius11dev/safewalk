@@ -40,6 +40,7 @@ import { TransportModeSwitch, type TransportMode } from './transport-mode-switch
 import { WheelchairShareCheck } from './wheelchair-share-check';
 import { durationLabel, durationSpoken } from '@/lib/duration';
 import { localTime } from '@/lib/time';
+import { MapConsentPrompt } from './map-consent-prompt';
 
 const compareFitPadding = { top: 170, right: 80, bottom: 420, left: 45 };
 
@@ -352,14 +353,9 @@ export function RealCompareRoutesScreen() {
               </View>
             ) : !consent.data?.enabled ? (
               <View style={s.consentNotice}>
-                <AppText variant="subtitle">Sua autorização é necessária.</AppText>
-                <AppText tone="muted">
-                  Os provedores recebem a origem e o destino para desenhar o mapa e calcular o
-                  percurso.
-                </AppText>
-                <Button
-                  label="Revisar serviços do mapa"
-                  onPress={() => router.push('/servicos-mapa')}
+                <MapConsentPrompt
+                  title="Ative o mapa para ver as rotas"
+                  actionLabel="Ativar o mapa e ver rotas"
                 />
               </View>
             ) : (

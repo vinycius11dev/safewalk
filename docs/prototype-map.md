@@ -142,6 +142,12 @@ A integração atual do CGE disponível no projeto fornece totais municipais sem
 - A prioridade é sugerida por regra fixa (tipo de maior risco a quem anda a pé, relatos em aberto do mesmo tipo a até 100 m, confirmações de outras pessoas e mais de 7 dias parado) e o painel explica os motivos; não é classificação oficial. Arquivar exige um motivo. "Autor diz que passou" avisa que quem relatou marcou o problema como resolvido, sem encerrar o caso.
 - O painel não recebe nome, e-mail nem identificador de quem relatou. Relatos privados ou da comunidade que não foram enviados ao painel não aparecem nele.
 
+## Ativação do mapa em um toque (15/11/2026)
+
+- Antes, quem ainda não tinha ativado o mapa precisava de 4 toques e uma rolagem para buscar o primeiro endereço (barra de busca → "Revisar serviços do mapa" → rolar e marcar "Entendi…" → "Ativar"). Agora a busca, o destino no mapa, a comparação de rotas e o Início mostram um cartão com o resumo do que é enviado (termo da busca e pontos escolhidos aos serviços OpenFreeMap, Photon e Valhalla; sem nome, telefone ou e-mail; GPS só quando a pessoa pedir), o botão que ativa ali mesmo ("Ativar o mapa e buscar", "Ativar o mapa e ver rotas"…) e o link "Ver o que é enviado" para a página completa, que continua com a caixa de confirmação. Na busca, o campo de destino já abre pronto para digitar.
+- Os endereços da busca deixam de terminar em "Brazil" (o país vinha do Photon em inglês e é sempre o mesmo).
+- O endereço principal do site leva à apresentação pelo próprio servidor (`.htaccess`), sem depender do JavaScript da página.
+
 ## Acesso ao painel redesenhado (15/11/2026)
 
 - As telas de acesso do painel (entrar, recuperar senha, criar nova senha) são sempre escuras e animadas: ao fundo, aurora com as cores da marca e granulado, e um mapa da cidade em perspectiva que se desloca devagar, com luzes percorrendo as avenidas e pinos dos tipos de relato que surgem com uma onda no chão e somem em ciclo (ilustração, não dado real). À esquerda, marca com selo "Demonstração", o título "A rua avisa. A cidade age." (segunda linha com brilho em gradiente), um texto curto, um feed animado "Exemplos de relatos chegando à fila" (um exemplo novo a cada 3 s, com tipo, rua e andamento) e três atalhos de função. À direita, cartão de vidro com borda de luz girando e brilho que acompanha o ponteiro; botão "Entrar" com reflexo. Entrada em sequência ao abrir. No celular a cidade fica atrás do cartão, e o feed e os atalhos são omitidos.

@@ -26,6 +26,7 @@ import { createRealSearchStyles } from './real-search-screen.styles';
 import { uniqueGeocodingPlaces } from './geocoding-results';
 import { SearchRouteCard, type RouteEndpoint } from './search-route-card';
 import { isSamePlace, SAME_PLACE_MESSAGE } from './same-place';
+import { MapConsentPrompt } from './map-consent-prompt';
 
 const SAME_AS_DESTINATION_MESSAGE =
   'Esse é o mesmo lugar do destino: você já estaria lá. Escolha outro ponto de saída ou outro destino.';
@@ -326,14 +327,9 @@ export function RealSearchScreen() {
         <ErrorNotice error={consent.error} />
         {!consent.data?.enabled ? (
           <Card>
-            <AppText variant="heading">Autorize os serviços do mapa</AppText>
-            <AppText tone="muted">
-              Para encontrar endereços e calcular caminhos, os provedores recebem os locais
-              consultados. Você pode revisar os detalhes antes de ativar.
-            </AppText>
-            <Button
-              label="Revisar serviços do mapa"
-              onPress={() => router.push('/servicos-mapa')}
+            <MapConsentPrompt
+              title="Ative o mapa para buscar endereços"
+              actionLabel="Ativar o mapa e buscar"
             />
           </Card>
         ) : (
