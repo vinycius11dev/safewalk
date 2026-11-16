@@ -13,6 +13,7 @@ import type { Session } from '@safewalk/contracts';
 import { useQueryClient } from '@tanstack/react-query';
 import { readSession, writeSession } from '@/lib/session-storage';
 import { observeSessionExpiration } from '@/lib/api-client';
+import { clearRecentDestinations } from '@/features/places/recent-destinations-store';
 
 type AuthValue = {
   session: Session | null;
@@ -48,6 +49,8 @@ export function AuthProvider({ children }: PropsWithChildren) {
   const saveSession = useCallback(
     async (next: Session | null) => {
       await writeSession(next);
+      // Ao sair (ou excluir a conta), os destinos guardados no aparelho também saem.
+      if (!next) await clearRecentDestinations().catch(() => undefined);
       queryClient.clear();
       setSession(next);
       if (next) setAccountDeletionConfirmed(false);

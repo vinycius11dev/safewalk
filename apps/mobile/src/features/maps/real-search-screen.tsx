@@ -18,6 +18,13 @@ import {
   parseFavoriteKind,
 } from '@/features/places/favorite-places';
 import { useCreatePlace, useSavedPlaces, useUpdatePlace } from '@/features/places/use-places';
+import { RecentDestinationsSection } from '@/features/places/recent-destinations-section';
+import {
+  useClearRecentDestinations,
+  useForgetDestination,
+  useRecentDestinations,
+  useRememberDestination,
+} from '@/features/places/use-recent-destinations';
 import { useTheme } from '@/theme/theme-provider';
 import { useClock } from '@/hooks/use-clock';
 import { useAddressSearch, useMapConsent, useReverseAddress } from './use-map-data';
@@ -55,6 +62,10 @@ export function RealSearchScreen() {
     : undefined;
   const favoritesFull = savedPlaces.length >= FAVORITE_LIMIT;
   const favoriteBusy = createFavorite.isPending || updateFavorite.isPending;
+  const recents = useRecentDestinations();
+  const rememberDestination = useRememberDestination();
+  const forgetDestination = useForgetDestination();
+  const clearRecents = useClearRecentDestinations();
   const [search, setSearch] = useState('');
   const [gpsRequest, setGpsRequest] = useState(0);
   const completedGpsRequest = useRef(0);
@@ -119,19 +130,21 @@ export function RealSearchScreen() {
     setSearch(text);
     setNotice(null);
   }
-  function chooseLocation(location: Coordinates, label: string) {
+  /** Devolve true quando o ponto foi aceito como destino (para guardá-lo nos recentes). */
+  function chooseLocation(location: Coordinates, label: string): boolean {
     if (choosingOrigin) {
       if (isSamePlace(journey.destination, location)) {
         setNotice(SAME_AS_DESTINATION_MESSAGE);
-        return;
+        return false;
       }
       setNotice(null);
       update({ origin: location, originLabel: label, selectedRoute: null });
       router.replace(journey.destination ? '/rotas' : '/buscar');
+      return false;
     } else {
       if (isSamePlace(effectiveOrigin, location)) {
         setNotice(SAME_PLACE_MESSAGE);
-        return;
+        return false;
       }
       setNotice(null);
       update({
@@ -147,7 +160,12 @@ export function RealSearchScreen() {
       });
       if (journey.originConfirmed || gpsOrigin) router.push('/rotas');
       else router.push({ pathname: '/buscar', params: { modo: 'origem' } });
+      return true;
     }
+  }
+  /** Escolhe o destino e o guarda no banco local do aparelho. */
+  function chooseAndRemember(location: Coordinates, label: string) {
+    if (chooseLocation(location, label)) rememberDestination.mutate({ label, location });
   }
   function leaveSaving() {
     if (router.canGoBack()) router.back();
@@ -169,7 +187,7 @@ export function RealSearchScreen() {
   function selectPlace(place: GeocodingPlace) {
     if (savingKind)
       saveFavorite(savingKind, place.name, place.address, place.location, leaveSaving);
-    else chooseLocation(place.location, place.address || place.name);
+    else chooseAndRemember(place.location, place.address || place.name);
   }
   function editFavorite(kind: SavedPlaceKind, place?: SavedPlace) {
     router.push({
@@ -409,6 +427,25 @@ export function RealSearchScreen() {
                 onEdit={editFavorite}
                 onManage={() => router.push('/locais-salvos')}
               />
+            )}
+            {!savingKind && !searching && (
+              <>
+                <RecentDestinationsSection
+                  places={recents.data ?? []}
+                  verb={choosingOrigin ? 'Sair de' : 'Ir para'}
+                  onSelect={(place) => chooseAndRemember(place.location, place.label)}
+                  onRemove={(place) => forgetDestination.mutate(place.key)}
+                  onClear={() => clearRecents.mutate()}
+                />
+                <ErrorNotice
+                  error={
+                    recents.error ??
+                    rememberDestination.error ??
+                    forgetDestination.error ??
+                    clearRecents.error
+                  }
+                />
+              </>
             )}
             {(savingKind || searching) && (
               <View style={s.searchSection}>

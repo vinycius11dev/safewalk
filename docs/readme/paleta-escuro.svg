@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="984" height="334" viewBox="0 0 984 334" role="img" aria-label="Paleta de cores: Fundo #111C2D, Superfície #19263A, Elevado #243550, Borda #354862, Texto #F2F1E9, Texto secundário #B0BDCE, Link #7AAAFF, Sucesso #54D7B0, Atenção #F4BD58, Perigo #FF6B6B">
+  <rect x="1" y="1" width="982" height="332" rx="22" fill="#111C2D" stroke="#354862" stroke-width="2"/>
+  <g>
+    <rect x="32" y="32" width="140" height="84" rx="14" fill="#111C2D" stroke="#354862" stroke-width="2"/>
+    <text x="34" y="140" fill="#F2F1E9" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" font-weight="600">Fundo</text>
+    <text x="34" y="161" fill="#B0BDCE" font-family="'JetBrains Mono', Consolas, 'SFMono-Regular', Menlo, monospace" font-size="13">#111C2D</text>
+  </g>
+  <g>
+    <rect x="188" y="32" width="140" height="84" rx="14" fill="#19263A" stroke="#354862" stroke-width="2"/>
+    <text x="190" y="140" fill="#F2F1E9" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" font-weight="600">Superfície</text>
+    <text x="190" y="161" fill="#B0BDCE" font-family="'JetBrains Mono', Consolas, 'SFMono-Regular', Menlo, monospace" font-size="13">#19263A</text>
+  </g>
+  <g>
+    <rect x="344" y="32" width="140" height="84" rx="14" fill="#243550" stroke="#354862" stroke-width="2"/>
+    <text x="346" y="140" fill="#F2F1E9" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" font-weight="600">Elevado</text>
+    <text x="346" y="161" fill="#B0BDCE" font-family="'JetBrains Mono', Consolas, 'SFMono-Regular', Menlo, monospace" font-size="13">#243550</text>
+  </g>
+  <g>
+    <rect x="500" y="32" width="140" height="84" rx="14" fill="#354862" stroke="#354862" stroke-width="2"/>
+    <text x="502" y="140" fill="#F2F1E9" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" font-weight="600">Borda</text>
+    <text x="502" y="161" fill="#B0BDCE" font-family="'JetBrains Mono', Consolas, 'SFMono-Regular', Menlo, monospace" font-size="13">#354862</text>
+  </g>
+  <g>
+    <rect x="656" y="32" width="140" height="84" rx="14" fill="#F2F1E9"/>
+    <text x="658" y="140" fill="#F2F1E9" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" font-weight="600">Texto</text>
+    <text x="658" y="161" fill="#B0BDCE" font-family="'JetBrains Mono', Consolas, 'SFMono-Regular', Menlo, monospace" font-size="13">#F2F1E9</text>
+  </g>
+  <g>
+    <rect x="812" y="32" width="140" height="84" rx="14" fill="#B0BDCE"/>
+    <text x="814" y="140" fill="#F2F1E9" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" font-weight="600">Texto secundário</text>
+    <text x="814" y="161" fill="#B0BDCE" font-family="'JetBrains Mono', Consolas, 'SFMono-Regular', Menlo, monospace" font-size="13">#B0BDCE</text>
+  </g>
+  <g>
+    <rect x="32" y="174" width="140" height="84" rx="14" fill="#7AAAFF"/>
+    <text x="34" y="282" fill="#F2F1E9" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" font-weight="600">Link</text>
+    <text x="34" y="303" fill="#B0BDCE" font-family="'JetBrains Mono', Consolas, 'SFMono-Regular', Menlo, monospace" font-size="13">#7AAAFF</text>
+  </g>
+  <g>
+    <rect x="188" y="174" width="140" height="84" rx="14" fill="#54D7B0"/>
+    <text x="190" y="282" fill="#F2F1E9" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" font-weight="600">Sucesso</text>
+    <text x="190" y="303" fill="#B0BDCE" font-family="'JetBrains Mono', Consolas, 'SFMono-Regular', Menlo, monospace" font-size="13">#54D7B0</text>
+  </g>
+  <g>
+    <rect x="344" y="174" width="140" height="84" rx="14" fill="#F4BD58"/>
+    <text x="346" y="282" fill="#F2F1E9" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" font-weight="600">Atenção</text>
+    <text x="346" y="303" fill="#B0BDCE" font-family="'JetBrains Mono', Consolas, 'SFMono-Regular', Menlo, monospace" font-size="13">#F4BD58</text>
+  </g>
+  <g>
+    <rect x="500" y="174" width="140" height="84" rx="14" fill="#FF6B6B"/>
+    <text x="502" y="282" fill="#F2F1E9" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" font-weight="600">Perigo</text>
+    <text x="502" y="303" fill="#B0BDCE" font-family="'JetBrains Mono', Consolas, 'SFMono-Regular', Menlo, monospace" font-size="13">#FF6B6B</text>
+  </g>
+</svg>

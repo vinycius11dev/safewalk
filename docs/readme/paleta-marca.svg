@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="984" height="192" viewBox="0 0 984 192" role="img" aria-label="Paleta de cores: Noite #0E1726, Creme #F5F3EC, Âmbar #F2B45A, Âmbar (fundo claro) #E39A2C, Azul SafeWalk #2F6FEB, SOS #D92636">
+  <rect x="1" y="1" width="982" height="190" rx="22" fill="#FFFFFF" stroke="#D9E2EF" stroke-width="2"/>
+  <g>
+    <rect x="32" y="32" width="140" height="84" rx="14" fill="#0E1726"/>
+    <text x="34" y="140" fill="#15233A" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" font-weight="600">Noite</text>
+    <text x="34" y="161" fill="#5A6A82" font-family="'JetBrains Mono', Consolas, 'SFMono-Regular', Menlo, monospace" font-size="13">#0E1726</text>
+  </g>
+  <g>
+    <rect x="188" y="32" width="140" height="84" rx="14" fill="#F5F3EC" stroke="#D9E2EF" stroke-width="2"/>
+    <text x="190" y="140" fill="#15233A" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" font-weight="600">Creme</text>
+    <text x="190" y="161" fill="#5A6A82" font-family="'JetBrains Mono', Consolas, 'SFMono-Regular', Menlo, monospace" font-size="13">#F5F3EC</text>
+  </g>
+  <g>
+    <rect x="344" y="32" width="140" height="84" rx="14" fill="#F2B45A"/>
+    <text x="346" y="140" fill="#15233A" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" font-weight="600">Âmbar</text>
+    <text x="346" y="161" fill="#5A6A82" font-family="'JetBrains Mono', Consolas, 'SFMono-Regular', Menlo, monospace" font-size="13">#F2B45A</text>
+  </g>
+  <g>
+    <rect x="500" y="32" width="140" height="84" rx="14" fill="#E39A2C"/>
+    <text x="502" y="140" fill="#15233A" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" font-weight="600">Âmbar (fundo claro)</text>
+    <text x="502" y="161" fill="#5A6A82" font-family="'JetBrains Mono', Consolas, 'SFMono-Regular', Menlo, monospace" font-size="13">#E39A2C</text>
+  </g>
+  <g>
+    <rect x="656" y="32" width="140" height="84" rx="14" fill="#2F6FEB"/>
+    <text x="658" y="140" fill="#15233A" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" font-weight="600">Azul SafeWalk</text>
+    <text x="658" y="161" fill="#5A6A82" font-family="'JetBrains Mono', Consolas, 'SFMono-Regular', Menlo, monospace" font-size="13">#2F6FEB</text>
+  </g>
+  <g>
+    <rect x="812" y="32" width="140" height="84" rx="14" fill="#D92636"/>
+    <text x="814" y="140" fill="#15233A" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" font-weight="600">SOS</text>
+    <text x="814" y="161" fill="#5A6A82" font-family="'JetBrains Mono', Consolas, 'SFMono-Regular', Menlo, monospace" font-size="13">#D92636</text>
+  </g>
+</svg>

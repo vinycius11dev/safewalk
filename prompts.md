@@ -27,6 +27,19 @@ Abaixo estão os principais pedidos, resumidos e agrupados por tema. Cada integr
 
 - "Organizar a entrega de Mobile conforme o PDF da GS." Resultado: Ficha da CitizenTech e prints no README, roteiro do vídeo e este arquivo.
 
+- "O banco de dados vai funcionar como? Vamos parar o que estamos usando?" Resultado: o MariaDB continua no servidor, e o app ganhou um banco SQLite no aparelho para os destinos recentes.
+- "Preparar todo o GitHub, com os prints, a paleta de cores aparecendo, bem formatado e profissional."
+
 ## Prompts de cada integrante
 
 _Cada integrante cola aqui os prompts que usou e o que aprendeu com a resposta._
+
+### Enzo Dias (RM 558225)
+
+### Gabriel Dias (RM 556830)
+
+### Gabriel Galerani (RM 557421)
+
+### Gustavo Alves (RM 557876)
+
+### Leonardo Taschin (RM 554583)
