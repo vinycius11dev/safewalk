@@ -48,8 +48,9 @@ jobs:
     env:
       EXPO_PUBLIC_API_URL: ${{ vars.SAFEWALK_API_URL || 'https://api.safewalk.recapture.com.br' }}
       VITE_API_URL: ${{ vars.SAFEWALK_API_URL || 'https://api.safewalk.recapture.com.br' }}
-      VALUEHOST_OUT: ${{ runner.temp }}/release
     steps:
+      - name: Definir pasta do pacote
+        run: echo "VALUEHOST_OUT=$RUNNER_TEMP/release" >> "$GITHUB_ENV"
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
