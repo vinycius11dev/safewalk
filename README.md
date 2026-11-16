@@ -127,6 +127,10 @@ npm run build
 
 Os testes de integração usam loopback/contas sintéticas e verificam isolamento, prazos, PIN, convites, posições, snapshot de rotas, consentimento, importação/cache e revogação de links. Consulte as documentações específicas para as amostras externas executadas. A aprovação de testes não certifica a qualidade dos dados urbanos nem a execução nativa em aparelho.
 
+## Publicação
+
+Tudo que entra na `main` do GitHub é testado (tipos, lint e testes) e, se passar, publicado sozinho no servidor em até uns 10 minutos: app em https://safewalk.recapture.com.br, painel em https://painel.safewalk.recapture.com.br e API em https://api.safewalk.recapture.com.br. O servidor busca a versão nova com uma chave somente leitura; ninguém precisa de acesso à hospedagem. Como colaborar: [CONTRIBUTING.md](CONTRIBUTING.md). Detalhes: [docs/valuehost.md](docs/valuehost.md).
+
 ## Estrutura e referências
 
 - [AGENTS.md](AGENTS.md) e [CONTRIBUTING.md](CONTRIBUTING.md): regras de desenvolvimento.
