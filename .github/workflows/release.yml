@@ -57,6 +57,7 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - run: npm run build -w @safewalk/contracts
       - run: npm run build -w @safewalk/admin
       - run: npm run package:valuehost
       - name: Publicar pacote na branch release
