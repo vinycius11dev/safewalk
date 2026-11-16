@@ -4,7 +4,7 @@
 
 <br />
 
-[![Publicação](https://github.com/vinycius11dev/safewalk/actions/workflows/release.yml/badge.svg)](https://github.com/vinycius11dev/safewalk/actions/workflows/release.yml)
+[![CI: GitHub Actions](https://img.shields.io/badge/CI-GitHub%20Actions-2088FF?logo=githubactions&logoColor=white)](https://github.com/vinycius11dev/safewalk/actions/workflows/release.yml)
 ![Expo SDK 58](https://img.shields.io/badge/Expo-SDK%2058-000020?logo=expo&logoColor=white)
 ![React Native 0.88](https://img.shields.io/badge/React%20Native-0.88-149ECA?logo=react&logoColor=white)
 ![TypeScript strict](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)
