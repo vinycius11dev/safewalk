@@ -1,0 +1,3 @@
+# Source code lives under Wamp's www for development. Use the Expo and API ports.
+# Deploy only the web export to public_html, and the API outside public_html.
+Require all denied

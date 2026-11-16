@@ -1,0 +1,76 @@
+# Cada mudança na `main` é testada e, se passar, vira um pacote publicado na branch `release`.
+# O servidor da ValueHost busca essa branch sozinho (deploy/valuehost/pull-and-deploy.sh):
+# nenhuma senha ou chave do servidor fica no GitHub.
+name: Testar e publicar
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  verificar:
+    name: Tipos, lint e testes
+    runs-on: ubuntu-latest
+    env:
+      # Valores fictícios: os testes de unidade não abrem conexão com banco.
+      DB_NAME: safewalk_ci
+      DB_USER: safewalk_ci
+      DB_PASSWORD: ci-sem-banco
+      JWT_SECRET: ci-chave-de-teste-com-mais-de-32-caracteres
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test
+
+  publicar:
+    name: Montar pacote e publicar na branch release
+    needs: verificar
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      EXPO_PUBLIC_API_URL: ${{ vars.SAFEWALK_API_URL || 'https://api.safewalk.recapture.com.br' }}
+      VITE_API_URL: ${{ vars.SAFEWALK_API_URL || 'https://api.safewalk.recapture.com.br' }}
+      VALUEHOST_OUT: ${{ runner.temp }}/release
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build -w @safewalk/admin
+      - run: npm run package:valuehost
+      - name: Publicar pacote na branch release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cd "$VALUEHOST_OUT"
+          mkdir publish
+          mv safewalk-backend.tar.gz safewalk-web.tar.gz safewalk-painel.tar.gz SHA256SUMS publish/
+          cd publish
+          printf 'commit=%s\nbuilt_at=%s\nrun=%s\n' "$GITHUB_SHA" "$(date -u +%FT%TZ)" "$GITHUB_RUN_NUMBER" > VERSION
+          git init -q -b release
+          git config user.name "safewalk-ci"
+          git config user.email "safewalk-ci@users.noreply.github.com"
+          git add .
+          git commit -q -m "Pacote de ${GITHUB_SHA::7} (execução ${GITHUB_RUN_NUMBER})"
+          git push -q -f "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" release
+          echo "Publicado: ${GITHUB_SHA::7}" >> "$GITHUB_STEP_SUMMARY"

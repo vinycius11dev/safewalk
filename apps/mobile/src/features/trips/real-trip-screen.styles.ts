@@ -1,0 +1,126 @@
+import { StyleSheet } from 'react-native';
+import { fonts, mapMarkerColors, radii, spacing, type Colors } from '@/theme/tokens';
+
+/** O botão "Acompanhar" fica abaixo da faixa de instrução e do aviso de chuva. */
+export const followButtonPosition = (top: number) =>
+  StyleSheet.create({ position: { top } }).position;
+
+export function createRealTripStyles(colors: Colors) {
+  return StyleSheet.create({
+    instruction: {
+      position: 'absolute',
+      top: spacing.md,
+      left: spacing.md,
+      right: spacing.md,
+      borderRadius: radii.lg,
+      backgroundColor: colors.primary,
+      padding: spacing.lg,
+      gap: spacing.sm,
+    },
+    instructionTitle: { color: colors.white, fontFamily: fonts.bold, fontSize: 18 },
+    maneuverBadge: {
+      width: 58,
+      height: 58,
+      borderRadius: radii.md,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: `${colors.white}2E`,
+    },
+    maneuverDistance: {
+      color: colors.white,
+      fontFamily: fonts.extrabold,
+      fontSize: 30,
+      lineHeight: 34,
+    },
+    signalAlert: {
+      alignSelf: 'flex-start',
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.sm,
+      paddingVertical: spacing.xs,
+      paddingLeft: spacing.xs,
+      paddingRight: spacing.md,
+      borderRadius: radii.pill,
+      backgroundColor: colors.white,
+    },
+    signalBubble: {
+      width: 26,
+      height: 26,
+      borderRadius: 13,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: mapMarkerColors.signals,
+    },
+    signalIcon: { width: 16, height: 16 },
+    signalText: { color: mapMarkerColors.signals, fontFamily: fonts.bold, fontSize: 14 },
+    white: { color: colors.white },
+    panelContent: { padding: spacing.lg, paddingTop: spacing.xs, gap: spacing.md },
+    panelDetails: { paddingHorizontal: spacing.lg, paddingBottom: spacing.lg, gap: spacing.md },
+    criticalAction: { padding: spacing.lg, paddingTop: spacing.sm, gap: spacing.sm },
+    row: { flexDirection: 'row', gap: spacing.md, alignItems: 'center' },
+    between: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      gap: spacing.md,
+      alignItems: 'center',
+    },
+    grow: { flex: 1 },
+    estimate: {
+      fontFamily: fonts.extrabold,
+      fontSize: 27,
+      lineHeight: 33,
+      color: colors.primaryText,
+    },
+    notice: {
+      padding: spacing.md,
+      borderRadius: radii.md,
+      backgroundColor: colors.raised,
+      gap: spacing.xs,
+    },
+    steps: { maxHeight: 210, borderTopColor: colors.border, borderTopWidth: 1 },
+    step: {
+      flexDirection: 'row',
+      gap: spacing.md,
+      paddingVertical: spacing.md,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    stepNumber: { width: 22, color: colors.primaryText, fontFamily: fonts.bold },
+    action: { paddingVertical: spacing.sm },
+    followButton: {
+      position: 'absolute',
+      zIndex: 5,
+      left: spacing.md,
+      minHeight: 44,
+      paddingHorizontal: spacing.md,
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.xs,
+      borderRadius: radii.pill,
+      backgroundColor: colors.primary,
+    },
+    mapPlaceholder: {
+      ...StyleSheet.absoluteFill,
+      backgroundColor: colors.background,
+      padding: spacing.lg,
+      paddingTop: 165,
+      alignItems: 'flex-start',
+      gap: spacing.md,
+    },
+    instructionsOverlay: {
+      flex: 1,
+      backgroundColor: colors.outer,
+      justifyContent: 'center',
+      padding: spacing.lg,
+    },
+    instructionsSheet: {
+      flex: 1,
+      maxHeight: '90%',
+      padding: spacing.lg,
+      gap: spacing.md,
+      borderRadius: radii.lg,
+      backgroundColor: colors.surface,
+    },
+    instructionList: { flex: 1 },
+  });
+}

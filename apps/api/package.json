@@ -1,0 +1,42 @@
+{
+  "name": "@safewalk/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "start": "node dist/server.js",
+    "build": "tsc -p tsconfig.json",
+    "postbuild": "node scripts/copy-infosiga-extractor.mjs",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "tsx --test src/config/*.test.ts src/domain/*.test.ts src/integrations/urban/*.test.ts src/integrations/email/*.test.ts src/modules/contacts/*.test.ts src/modules/reports/*.test.ts test/routing.test.ts",
+    "test:integration": "tsx --test --test-concurrency=1 test/*.test.mjs test/*.integration.test.ts",
+    "test:account": "tsx --test test/account.integration.test.ts",
+    "db:migrate": "tsx src/database/migrate.ts",
+    "admin:create": "tsx src/modules/admin/create-admin.ts",
+    "admin:seed": "tsx src/modules/admin/seed-panel-demo.ts",
+    "admin:cleanup-tests": "tsx src/modules/admin/cleanup-test-data.ts",
+    "import:city-layers": "tsx src/modules/urban-data/import-city-layers.ts",
+    "import:ssp-crimes": "tsx src/modules/urban-data/import-ssp-crimes.ts"
+  },
+  "dependencies": {
+    "@safewalk/contracts": "0.1.0",
+    "compression": "1.8.2",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.2.1",
+    "helmet": "^8.1.0",
+    "jose": "^6.1.0",
+    "mysql2": "^3.15.3",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@types/compression": "1.8.1",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.5",
+    "@types/node": "^22.18.12",
+    "tsx": "^4.20.6",
+    "typescript": "~6.0.3"
+  }
+}

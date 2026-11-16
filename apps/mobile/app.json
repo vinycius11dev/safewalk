@@ -1,0 +1,63 @@
+{
+  "expo": {
+    "name": "SafeWalk",
+    "slug": "safewalk",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "scheme": "safewalk",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "br.com.safewalk.app"
+    },
+    "android": {
+      "package": "br.com.safewalk.app",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/brand/adaptive-foreground.png",
+        "backgroundColor": "#0E1726"
+      }
+    },
+    "web": {
+      "output": "single",
+      "name": "SafeWalk — caminhe com mais tranquilidade",
+      "favicon": "./assets/brand/icon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      "expo-sharing",
+      "@maplibre/maplibre-react-native",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Permita que o SafeWalk use sua localização para acompanhar o trajeto que você iniciar.",
+          "locationAlwaysAndWhenInUsePermission": "Permita que o SafeWalk acompanhe seu trajeto ativo mesmo com o aplicativo em segundo plano. Você pode encerrar o acompanhamento a qualquer momento.",
+          "isIosBackgroundLocationEnabled": true,
+          "isAndroidBackgroundLocationEnabled": true,
+          "isAndroidForegroundServiceEnabled": true
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Permita que o SafeWalk escolha uma foto para documentar um bloqueio no caminho.",
+          "cameraPermission": false,
+          "microphonePermission": false
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/brand/splash.png",
+          "imageWidth": 180,
+          "resizeMode": "contain",
+          "backgroundColor": "#0E1726"
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "icon": "./assets/brand/icon.png"
+  }
+}

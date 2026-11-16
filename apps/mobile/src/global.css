@@ -1,0 +1,107 @@
+:root {
+  color-scheme: dark light;
+  /* Sobrescritas em runtime por theme-document.web.ts a partir dos tokens do tema. */
+  --sw-outer: #0c1625;
+  --sw-border: #354862;
+  --sw-focus: #7aaaff;
+  --sw-scroll: #354862;
+  --sw-auth-bg: #fff;
+  --sw-auth-scroll: #d9e2ef;
+}
+html,
+body,
+#root {
+  min-height: 100%;
+  margin: 0;
+}
+#root {
+  display: flex;
+  min-height: 100dvh;
+}
+body {
+  background: var(--sw-outer);
+  -webkit-font-smoothing: antialiased;
+}
+body:has(#safewalk-auth-frame) {
+  background: var(--sw-auth-bg);
+  color-scheme: light;
+}
+body:has(#safewalk-auth-frame)::-webkit-scrollbar {
+  background: var(--sw-auth-bg);
+}
+body:has(#safewalk-auth-frame)::-webkit-scrollbar-thumb {
+  background: var(--sw-auth-scroll);
+}
+body:has(#safewalk-auth-frame) *::-webkit-scrollbar {
+  background: var(--sw-auth-bg);
+}
+body:has(#safewalk-auth-frame) *::-webkit-scrollbar-thumb {
+  background: var(--sw-auth-scroll);
+}
+* {
+  box-sizing: border-box;
+}
+input,
+textarea,
+button {
+  font: inherit;
+}
+:focus-visible {
+  outline: 2px solid var(--sw-focus);
+  outline-offset: 3px;
+}
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--sw-scroll);
+  border-radius: 10px;
+}
+@media (min-width: 481px) {
+  #safewalk-app-frame {
+    height: min(844px, calc(100dvh - 48px)) !important;
+    min-height: 600px;
+  }
+}
+@media (max-width: 480px) {
+  #safewalk-app-stage {
+    padding: 0 !important;
+    width: 100%;
+    min-height: 100dvh;
+    align-items: stretch;
+  }
+  #safewalk-app-frame {
+    width: 100% !important;
+    max-width: 100% !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    height: 100dvh !important;
+    min-height: 0 !important;
+  }
+}
+
+#safewalk-auth-frame {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 100dvh !important;
+  min-height: 0 !important;
+  overflow: auto !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: var(--sw-auth-bg) !important;
+}
+#safewalk-app-stage:has(#safewalk-auth-frame),
+#root:has(#safewalk-auth-frame) {
+  height: 100dvh !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  background: var(--sw-auth-bg) !important;
+}
+#safewalk-auth-form input:focus-visible {
+  outline: none;
+}
+/* A barra de busca destaca a pílula inteira ao focar; o campo interno não repete o contorno. */
+#safewalk-search-input:focus-visible {
+  outline: none;
+}

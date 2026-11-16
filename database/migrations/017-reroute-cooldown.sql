@@ -1,0 +1,5 @@
+ALTER TABLE trips
+  ADD COLUMN IF NOT EXISTS reroute_attempted_at DATETIME(3) NULL,
+  ADD COLUMN IF NOT EXISTS reroute_lock_until DATETIME(3) NULL,
+  ADD COLUMN IF NOT EXISTS reroute_lock_token CHAR(36) NULL,
+  ADD COLUMN IF NOT EXISTS rerouted_at DATETIME(3) NULL;

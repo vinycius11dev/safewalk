@@ -1,0 +1,27 @@
+ALTER TABLE users
+  ADD COLUMN IF NOT EXISTS duress_pin_hash VARCHAR(255) NULL,
+  ADD COLUMN IF NOT EXISTS signal_loss_minutes SMALLINT NOT NULL DEFAULT 10;
+
+ALTER TABLE trips
+  ADD COLUMN IF NOT EXISTS mode VARCHAR(8) NOT NULL DEFAULT 'route',
+  ADD COLUMN IF NOT EXISTS last_position_received_at DATETIME(3) NULL,
+  ADD COLUMN IF NOT EXISTS duress_at DATETIME(3) NULL,
+  ADD COLUMN IF NOT EXISTS duress_disguised BOOLEAN NOT NULL DEFAULT FALSE;
+
+UPDATE trips SET mode = 'demo' WHERE route_snapshot IS NULL;
+
+CREATE INDEX IF NOT EXISTS ix_trip_signal ON trips (status, last_position_received_at);
+
+CREATE TABLE IF NOT EXISTS saved_places (
+  id CHAR(36) PRIMARY KEY,
+  user_id CHAR(36) NOT NULL,
+  kind VARCHAR(8) NOT NULL,
+  label VARCHAR(60) NOT NULL,
+  address VARCHAR(300) NOT NULL,
+  latitude DECIMAL(10,7) NOT NULL,
+  longitude DECIMAL(10,7) NOT NULL,
+  created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  updated_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
+  CONSTRAINT fk_saved_place_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  INDEX ix_saved_place_owner (user_id)
+) ENGINE=InnoDB;

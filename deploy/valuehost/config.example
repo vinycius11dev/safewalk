@@ -1,0 +1,2 @@
+# Copiar para ~/safewalk-deploy/config no servidor. Porta 443 do GitHub, para não depender da 22.
+REPO=ssh://git@ssh.github.com:443/DONO/REPOSITORIO.git

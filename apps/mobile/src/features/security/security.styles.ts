@@ -1,0 +1,63 @@
+import { StyleSheet } from 'react-native';
+import type { Colors } from '@/theme/tokens';
+export const createSecurityStyles = (c: Colors) =>
+  StyleSheet.create({
+    profile: { alignItems: 'center', gap: 10, paddingVertical: 15 },
+    avatar: {
+      width: 72,
+      height: 72,
+      borderRadius: 36,
+      backgroundColor: c.primary,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    avatarText: { fontSize: 30, color: c.white },
+    menuItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 12,
+      paddingVertical: 14,
+      borderBottomWidth: 1,
+      borderBottomColor: c.border,
+    },
+    menuText: { flex: 1 },
+    toggleRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      gap: 12,
+    },
+    option: {
+      borderWidth: 1,
+      borderColor: c.border,
+      borderRadius: 16,
+      padding: 16,
+      gap: 7,
+      backgroundColor: c.surface,
+    },
+    optionSelected: { borderColor: c.primary, backgroundColor: c.selected },
+    sectionLabel: { marginTop: 14, fontSize: 11, letterSpacing: 1.2, color: c.muted },
+    profileHeader: { flexDirection: 'row', alignItems: 'center', gap: 14 },
+    profileName: { flex: 1, gap: 5 },
+    profileGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+    profileOption: {
+      width: '48%',
+      borderWidth: 1,
+      borderColor: c.border,
+      borderRadius: 15,
+      padding: 12,
+      gap: 7,
+      backgroundColor: c.surface,
+    },
+    toggleBody: { flex: 1, gap: 4 },
+    choiceRow: { flexDirection: 'row', gap: 10 },
+    choice: {
+      flex: 1,
+      alignItems: 'center',
+      paddingVertical: 14,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: c.border,
+      backgroundColor: c.surface,
+    },
+  });

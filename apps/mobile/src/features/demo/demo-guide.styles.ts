@@ -1,0 +1,106 @@
+import { StyleSheet, type ViewStyle } from 'react-native';
+import { brandColors, fonts, radii, spacing, type Colors } from '@/theme/tokens';
+
+const stopSize = 18;
+
+/** Largura do trecho já percorrido na linha de progresso. */
+export const walkedTrack = (index: number, total: number): ViewStyle => ({
+  width: `${total > 1 ? (index / (total - 1)) * 100 : 0}%`,
+});
+
+export const createDemoGuideStyles = (c: Colors) =>
+  StyleSheet.create({
+    progress: {
+      height: stopSize,
+      marginHorizontal: spacing.xl,
+      marginBottom: spacing.md,
+      justifyContent: 'center',
+    },
+    track: {
+      position: 'absolute',
+      left: stopSize / 2,
+      right: stopSize / 2,
+      height: 3,
+      borderRadius: radii.pill,
+      backgroundColor: c.border,
+    },
+    trackWalked: { height: 3, borderRadius: radii.pill, backgroundColor: c.primary },
+    stops: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+    stop: { width: stopSize, height: stopSize, alignItems: 'center', justifyContent: 'center' },
+    dot: { width: 7, height: 7, borderRadius: radii.pill, backgroundColor: c.border },
+    dotWalked: { backgroundColor: c.primary },
+    walker: {
+      width: stopSize,
+      height: stopSize,
+      borderRadius: radii.pill,
+      backgroundColor: c.primary,
+      borderWidth: 4,
+      borderColor: c.white,
+    },
+    content: { paddingHorizontal: spacing.xl, paddingBottom: spacing.xl, gap: spacing.lg },
+    scene: {
+      height: 200,
+      borderRadius: radii.lg,
+      overflow: 'hidden',
+      borderWidth: 1,
+      borderColor: c.border,
+      padding: spacing.md,
+      gap: spacing.sm,
+      justifyContent: 'flex-end',
+    },
+    sceneCentered: { justifyContent: 'center', alignItems: 'center' },
+    sceneCaption: { position: 'absolute', top: spacing.md, left: spacing.md },
+    emblem: {
+      alignSelf: 'center',
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: 84,
+      height: 84,
+      borderRadius: 28,
+      borderWidth: 6,
+      borderColor: c.raised,
+      backgroundColor: c.primary,
+    },
+    emblemBrand: { backgroundColor: brandColors.night },
+    emblemSos: { borderRadius: radii.pill, backgroundColor: c.dangerButton },
+    emblemSosText: { fontFamily: fonts.extrabold, fontSize: 20, lineHeight: 26, color: c.white },
+    pinRow: {
+      alignSelf: 'center',
+      flexDirection: 'row',
+      gap: spacing.md,
+      paddingHorizontal: spacing.xl,
+      paddingVertical: spacing.lg,
+      borderRadius: radii.lg,
+      borderWidth: 1,
+      borderColor: c.border,
+      backgroundColor: c.surface,
+    },
+    pinDot: { width: 14, height: 14, borderRadius: radii.pill, backgroundColor: c.primaryText },
+    sceneCard: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.md,
+      padding: spacing.md,
+      borderRadius: radii.md,
+      borderWidth: 1,
+      borderColor: c.border,
+      backgroundColor: c.surface,
+    },
+    sceneCardDanger: { borderColor: c.danger },
+    sceneCardBody: { flex: 1 },
+    copy: { gap: spacing.sm },
+    availability: { gap: spacing.sm },
+    action: { gap: spacing.sm },
+    list: { gap: spacing.sm },
+    listItem: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm },
+    listText: { flex: 1 },
+    footer: {
+      flexDirection: 'row',
+      gap: spacing.md,
+      paddingHorizontal: spacing.xl,
+      paddingVertical: spacing.md,
+      borderTopWidth: 1,
+      borderTopColor: c.border,
+    },
+    footerButton: { flex: 1 },
+  });

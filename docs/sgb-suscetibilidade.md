@@ -1,0 +1,9 @@
+# Suscetibilidade a inundações · SGB
+
+O SGB publica a camada [Inundação Área](https://geoportal.sgb.gov.br/server/rest/services/gestaoterritorial/inundacao/MapServer/0) como polígonos de suscetibilidade, com município, classe, ano, executor e informações da fonte. A carta de Taboão da Serra também está disponível no [repositório SGB](https://rigeo.sgb.gov.br/items/77c02dd1-a60c-4ac0-b0df-679fa0135f18). A classe não indica alagamento acontecendo agora nem comprova segurança ou acessibilidade de um trajeto. A cobertura varia por município; a ausência de polígonos não significa ausência de risco.
+
+A camada `flood_susceptibility` começa desativada. A tela de camadas explica que ativá-la envia o retângulo aproximado do mapa ao SGB por meio da API SafeWalk. A caixa é arredondada antes da consulta; não são enviados nome, telefone ou token. O cache é válido por sete dias e cópias anteriores podem ser mantidas para lidar com indisponibilidade. A lista padrão da API não consulta esta camada; somente uma solicitação explícita com `types=flood_susceptibility` a habilita.
+
+O conector consulta o serviço ArcGIS oficial por caixa geográfica, solicita GeoJSON EPSG:4326 sem coordenadas Z/M, preserva polígonos, classe e ano informados, e limita a consulta a três páginas de 50 registros. A paginação usa o identificador numérico crescente da fonte; quando o limite é atingido, o resultado é marcado como parcial. Falhas preservam o último resultado válido quando houver, identificando-o como desatualizado. A licença específica de reutilização do serviço deve ser confirmada junto ao SGB.
+
+Validação pontual em 29/10/2026: uma consulta pública de caixa na região de Taboão da Serra e arredores retornou 128 polígonos, com municípios Taboão da Serra e São Paulo, classes alta, média e baixa e ano informado de 2019. Isso demonstra o funcionamento daquela consulta; não comprova cobertura completa de nenhuma cidade nem atualidade das condições do local.

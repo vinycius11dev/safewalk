@@ -1,0 +1,1027 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"></head><body><title>SafeWalk na Bela Vista</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@800;900&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap">
+<style>
+/* Conceito: a volta para casa. "Me avisa quando chegar" abre a noite, o ponto âmbar do logo vira o sol e a página termina em "Cheguei". */
+:root {
+  color-scheme: dark;
+  --black: #05080F;
+  --night: #0E1726;
+  --cream: #F5F3EC;
+  --dim: #B6C1D1;
+  --amber: #F2B45A;
+  --blue: #2559C7;
+  --dusk: #17305A;
+  --red: #7F1222;
+  --ok: #54D7B0;
+  --ink: #0E1726;
+  --paper-dim: #4C5A70;
+  --paper-line: #D6D1C2;
+  --display: "Big Shoulders Display", "Big Shoulders", Impact, "Arial Narrow", sans-serif;
+  --text: "Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --gutter: max(clamp(24px, 7vw, 120px), calc((100vw - 1280px) / 2));
+  --gutter-l: max(var(--gutter), env(safe-area-inset-left, 0px));
+  --gutter-r: max(var(--gutter), env(safe-area-inset-right, 0px));
+  --col: calc(100vw - var(--gutter-l) - var(--gutter-r));
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; overflow-x: clip; }
+body { margin: 0; background: var(--black); color: var(--cream); font-family: var(--text); font-size: 1.0625rem; line-height: 1.5; overflow-x: clip; -webkit-font-smoothing: antialiased; }
+h1, h2, h3, p, ul, ol, figure { margin: 0; padding: 0; }
+ul, ol { list-style: none; }
+a { color: inherit; }
+img, video, svg { display: block; max-width: 100%; }
+:focus-visible { outline: 3px solid var(--amber); outline-offset: 3px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.pad { padding-left: var(--gutter-l); padding-right: var(--gutter-r); }
+.wrap { width: 100%; padding-left: var(--gutter-l); padding-right: var(--gutter-r); }
+.cover { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.big { font-family: var(--display); font-weight: 900; line-height: .88; letter-spacing: -.01em; text-wrap: balance; }
+.lede { max-width: 48ch; font-size: clamp(1.15rem, 1.55vw, 1.4rem); line-height: 1.42; text-wrap: pretty; }
+.fine { font-size: .92rem; line-height: 1.42; max-width: 56ch; }
+
+/* As cenas seguram a tela enquanto a pessoa rola. Sem animação, viram blocos normais. */
+.stage { position: relative; min-height: 100svh; overflow: hidden; isolation: isolate; }
+.fx .scene { height: var(--len, 260vh); }
+.fx .scene > .stage { position: sticky; top: 0; height: 100svh; min-height: 0; }
+
+/* Barra */
+.bar { position: absolute; top: 0; left: 0; right: 0; z-index: 50; display: flex; align-items: center; justify-content: space-between; gap: 24px; padding-top: 18px; padding-bottom: 18px; color: var(--cream); transition: background-color .25s, inset .25s, padding .25s, border-radius .25s; }
+.fx .bar { position: fixed; }
+.fx .bar.pill { top: 10px; left: max(12px, calc(var(--gutter-l) - 14px)); right: max(12px, calc(var(--gutter-r) - 22px)); padding: 8px 22px 8px 14px; border-radius: 30px; background: rgba(5,8,15,.72); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
+.brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.28rem; letter-spacing: -.02em; text-decoration: none; }
+.brand svg { width: 38px; height: 37px; overflow: visible; }
+.brand .track, .brand .ring { stroke: currentColor; }
+.brand .track { opacity: .28; }
+.brand .prog { stroke: currentColor; }
+.bar-end { display: flex; align-items: center; gap: 30px; }
+.bar nav { display: flex; gap: 30px; font-size: 1rem; font-weight: 600; }
+.bar nav a { text-decoration: none; }
+.bar nav a:hover { text-decoration: underline; text-underline-offset: 5px; text-decoration-thickness: 2px; }
+
+/* Abertura */
+.hero .stage { display: flex; flex-direction: column; justify-content: flex-end; gap: 72px; padding-top: 120px; padding-bottom: 40px; background: var(--black); }
+.hero .cover { z-index: -3; object-position: 70% center; }
+.hero-scrim { position: absolute; inset: 0; z-index: -2; background: linear-gradient(90deg, rgba(5,8,15,.82) 0, rgba(5,8,15,.42) 42%, rgba(5,8,15,0) 68%), linear-gradient(0deg, rgba(5,8,15,.75) 0, rgba(5,8,15,0) 40%), linear-gradient(180deg, rgba(5,8,15,.6) 0, rgba(5,8,15,0) 20%); }
+.hero-dark { position: absolute; inset: 0; z-index: -1; background: var(--black); opacity: 0; pointer-events: none; }
+.fx .hero-a, .fx .hero-b { position: absolute; left: 0; right: 0; bottom: 0; padding-bottom: clamp(32px, 5vh, 64px); }
+.hero h1 { font-size: min(12vw, 18vh, 168px); }
+.hero h1 .ln { display: block; overflow: hidden; padding-bottom: .1em; margin-bottom: -.1em; }
+.hero h1 .ln > span { display: block; }
+.hero-note { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 16px 40px; margin-top: 22px; }
+.hero-note p { max-width: 34ch; font-size: clamp(1.1rem, 1.5vw, 1.35rem); line-height: 1.3; font-weight: 500; }
+.cue { display: inline-flex; align-items: center; gap: 12px; font-weight: 600; }
+.cue i { position: relative; width: 22px; height: 36px; border: 2px solid currentColor; border-radius: 12px; }
+.cue i::after { content: ""; position: absolute; left: 50%; top: 6px; width: 6px; height: 6px; margin-left: -3px; border-radius: 50%; background: var(--amber); animation: cue 1.5s ease-in-out infinite; }
+@keyframes cue { 60%, 100% { transform: translateY(14px); opacity: 0; } }
+.hero-b { display: grid; gap: 26px; }
+.statement { max-width: 14em; font-size: min(6.4vw, 10.5vh, 92px); line-height: .95; }
+.actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.btn { display: inline-flex; align-items: center; min-height: 56px; padding: 12px 30px; border-radius: 30px; background: var(--amber); color: var(--ink); font-weight: 700; font-size: 1.05rem; text-decoration: none; transition: transform .15s, background-color .15s; }
+.btn:hover { transform: translateY(-2px); background: #FFC877; }
+.btn.line { background: transparent; color: var(--cream); box-shadow: inset 0 0 0 2px rgba(245,243,236,.6); }
+.btn.line:hover { background: rgba(245,243,236,.14); }
+.bar-cta { min-height: 44px; padding: 8px 20px; font-size: .98rem; white-space: nowrap; }
+
+/* 49.349 */
+.count .stage { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px; padding-top: 80px; padding-bottom: 40px; background: var(--black); text-align: center; }
+.digits { font-size: min(calc(var(--col) / 3), 50vh, 400px); line-height: .86; background-color: #C9791D; background-image: url(media/calcada.jpg); background-size: cover; background-position: center; background-blend-mode: screen; -webkit-background-clip: text; background-clip: text; color: transparent; }
+.count h2 { font-size: min(4.6vw, 7.5vh, 64px); line-height: .95; }
+.count .fine { color: var(--dim); }
+
+/* Cinco sites */
+.pile .stage { padding-top: 104px; padding-bottom: 48px; background: var(--night); }
+.pile-say { font-size: min(4vw, 7vh, 58px); max-width: 19em; line-height: .98; }
+.tabs { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px; margin-top: 40px; }
+.tab { border-radius: 12px; overflow: hidden; background: var(--cream); color: var(--ink); box-shadow: 0 24px 60px rgba(0,0,0,.45); }
+.tab b { display: flex; align-items: center; gap: 7px; padding: 10px 14px; background: #DAD6C8; font-size: .92rem; font-weight: 700; }
+.tab b::before { content: ""; width: 34px; height: 9px; border-radius: 5px; background: radial-gradient(circle at 4.5px 50%, #A9A493 4.5px, transparent 5px), radial-gradient(circle at 17px 50%, #A9A493 4.5px, transparent 5px), radial-gradient(circle at 29.5px 50%, #A9A493 4.5px, transparent 5px); }
+.tab span { display: block; padding: 18px 14px 26px; font-weight: 600; font-size: 1.1rem; line-height: 1.2; }
+.fx .tabs { display: block; margin: 0; position: absolute; inset: 0 var(--gutter-r) 0 var(--gutter-l); }
+.fx .tab { position: absolute; width: clamp(190px, 21vw, 300px); left: var(--x); top: var(--y); }
+.merge { display: none; }
+.fx .merge { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 28px; padding-inline: 24px; text-align: center; pointer-events: none; }
+.merge-tile { display: grid; place-items: center; width: min(28vh, 200px); aspect-ratio: 1; border-radius: 26%; background: var(--black); box-shadow: 0 0 0 2px rgba(245,243,236,.2), 0 0 120px rgba(242,180,90,.35); }
+.merge-tile svg { width: 62%; height: auto; }
+.merge p { font-size: min(5.4vw, 8.5vh, 76px); }
+
+/* Mercado: painéis coloridos que se empilham */
+.panel { position: sticky; top: 0; display: flex; flex-direction: column; justify-content: center; gap: clamp(18px, 3vh, 36px); min-height: 100svh; padding-top: 96px; padding-bottom: clamp(28px, 5vh, 56px); overflow: hidden; }
+.panel-figure { font-size: min(calc(var(--col) / var(--glyphs)), 38vh, 340px); padding-bottom: .09em; white-space: nowrap; }
+.panel-row { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 16px clamp(24px, 5vw, 80px); align-items: end; }
+.panel-text { max-width: 26em; font-size: clamp(1.3rem, 2vw, 1.85rem); font-weight: 600; letter-spacing: -.02em; line-height: 1.12; text-wrap: pretty; }
+.p-open { background: var(--black); justify-content: center; }
+.p-open h2 { font-size: min(8.5vw, 14.5vh, 120px); max-width: 9.5em; line-height: .94; }
+.p-blue { background: var(--dusk); color: var(--cream); }
+.p-amber { background: var(--amber); color: var(--ink); }
+.p-cream { background: var(--cream); color: var(--ink); }
+.p-black { background: #101C31; color: var(--cream); }
+.p-black .panel-figure { color: var(--amber); }
+
+/* Produto */
+.walk { position: relative; background: var(--night); transition: background-color .6s; }
+.walk[data-state="warn"] { background: #3B2A10; }
+.walk[data-state="red"] { background: var(--red); }
+.walk-head { display: grid; gap: 18px; padding-top: clamp(96px, 13vh, 160px); }
+.walk-head h2 { font-size: min(8vw, 13.5vh, 112px); max-width: 10em; line-height: .94; }
+.story { display: grid; }
+.steps, .stage-phone { grid-area: 1 / 1; }
+.steps { position: relative; z-index: 2; width: 54%; }
+.step { display: flex; flex-direction: column; justify-content: center; gap: 18px; min-height: 100svh; }
+.time { color: var(--amber); font-family: var(--display); font-weight: 800; font-size: 2rem; line-height: 1; }
+.step h3 { font-size: min(6.4vw, 10.5vh, 88px); line-height: .96; }
+.step p:last-child { max-width: 30em; font-size: clamp(1.2rem, 1.7vw, 1.5rem); line-height: 1.32; font-weight: 500; }
+.stage-phone { position: sticky; top: 0; height: 100svh; display: flex; align-items: center; justify-content: flex-end; padding-top: 56px; perspective: 1200px; pointer-events: none; }
+.ghost { position: absolute; left: -.04em; bottom: -.06em; font-family: var(--display); font-weight: 900; font-size: min(22vw, 40vh); line-height: .8; color: rgba(245,243,236,.05); white-space: nowrap; }
+.device { position: relative; height: min(76vh, 660px); aspect-ratio: 375 / 812; padding: 11px; border-radius: 52px; background: #02040A; box-shadow: 0 0 0 1.5px rgba(255,255,255,.2), 0 50px 120px rgba(0,0,0,.6); transform-style: preserve-3d; }
+.device-screen { position: relative; width: 100%; height: 100%; overflow: hidden; border-radius: 42px; background: var(--night); }
+.shot { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; opacity: 0; transition: opacity .35s; }
+.shot.is-on { opacity: 1; }
+.walk[data-state="red"] .device::after { content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: 0 0 0 0 rgba(255,255,255,.55); animation: pulse 1.3s ease-out infinite; }
+@keyframes pulse { to { box-shadow: 0 0 0 70px rgba(255,255,255,0); } }
+.inline-device { display: none; }
+.walk .fine { padding-bottom: 56px; }
+
+/* Quem acompanha */
+.watcher { position: relative; isolation: isolate; display: flex; align-items: flex-end; min-height: 100svh; overflow: hidden; background: var(--black); }
+.watcher .cover { z-index: -2; object-position: right center; }
+.watcher::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgba(5,8,15,.86) 0, rgba(5,8,15,.4) 44%, rgba(5,8,15,0) 66%), linear-gradient(0deg, rgba(5,8,15,.35) 0, rgba(5,8,15,0) 30%); }
+.watcher-copy { display: grid; gap: 20px; padding-block: clamp(40px, 8vh, 96px); }
+.watcher h2 { font-size: min(7vw, 12vh, 100px); max-width: 7.5em; line-height: .94; }
+
+/* Comparação de rotas: a barra é o próprio percurso, e o ponto âmbar do logo marca a escolha. */
+.compare { background: var(--dusk); color: var(--cream); padding-block: clamp(96px, 13vh, 160px); }
+.compare h2 { font-size: min(6.4vw, 10.5vh, 92px); max-width: 11em; line-height: .96; }
+.routes { display: grid; gap: clamp(28px, 5vh, 56px); margin-block: clamp(44px, 8vh, 96px); }
+.route-row { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 9fr); gap: 8px clamp(20px, 3vw, 48px); align-items: center; }
+.route-row .big { grid-row: 1 / span 2; font-size: min(5vw, 8.5vh, 72px); white-space: nowrap; }
+.route-row p:not(.big) { grid-column: 2; font-size: clamp(1.15rem, 1.7vw, 1.5rem); font-weight: 600; letter-spacing: -.01em; line-height: 1.2; }
+.route-bar { position: relative; grid-column: 2; grid-row: 1; height: clamp(24px, 4.4vh, 44px); width: var(--w); border-radius: 30px; background: rgba(255,255,255,.62); }
+.route-row.best .route-bar { background: var(--cream); }
+.route-row.best .route-bar::after { content: ""; position: absolute; right: -6px; top: 50%; width: clamp(40px, 7.4vh, 72px); aspect-ratio: 1; border-radius: 50%; background: var(--amber); transform: translateY(-50%); }
+.compare-row { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 20px clamp(28px, 6vw, 88px); align-items: end; padding-top: 26px; border-top: 2px solid rgba(255,255,255,.5); }
+
+/* Dados */
+.paper { background: var(--cream); color: var(--ink); }
+.data-head { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 24px clamp(28px, 6vw, 88px); align-items: end; padding-top: clamp(96px, 13vh, 160px); padding-bottom: clamp(40px, 6vh, 72px); }
+.data-head h2 { font-size: min(6.4vw, 11vh, 92px); line-height: .94; }
+.paper .lede, .paper .fine { color: var(--paper-dim); }
+.neq { padding-bottom: clamp(80px, 11vh, 140px); }
+.neq li { display: grid; grid-template-columns: minmax(0, 1fr) minmax(190px, 16em); gap: 10px clamp(20px, 4vw, 56px); align-items: end; padding-block: clamp(16px, 2.4vh, 26px); border-top: 2px solid var(--ink); }
+.claim { font-size: min(4.4vw, 7.5vh, 64px); line-height: .98; text-wrap: balance; }
+.claim .ne { display: inline-block; margin-inline: .12em; color: var(--blue); }
+.claim .not { color: var(--blue); }
+.meta { color: var(--paper-dim); font-size: 1rem; line-height: 1.3; }
+.meta strong { display: block; color: var(--ink); font-weight: 700; }
+
+/* Estágio */
+.status { background: var(--black); padding-block: clamp(96px, 13vh, 160px); }
+.status h2 { font-size: min(6.6vw, 11.5vh, 96px); max-width: 11em; line-height: .96; margin-bottom: clamp(40px, 7vh, 80px); }
+.status-grid { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 6fr); gap: clamp(36px, 5vw, 72px); align-items: center; }
+.split { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; }
+.split h3 { font-size: 1.1rem; margin-bottom: 14px; }
+.lamps li { display: flex; align-items: center; gap: 12px; padding-block: 12px; border-top: 1px solid rgba(245,243,236,.16); line-height: 1.22; font-weight: 500; font-size: 1.08rem; }
+.lamps li::before { content: ""; flex: none; width: 13px; height: 13px; border-radius: 50%; }
+.lit h3 { color: var(--amber); }
+.lit li::before { background: var(--amber); box-shadow: 0 0 18px 5px rgba(242,180,90,.7); transition: background-color .3s, box-shadow .3s; }
+.fx .lit li:not(.on)::before { background: #3B4252; box-shadow: none; }
+.off h3 { color: var(--dim); }
+.off li { color: var(--dim); }
+.off li::before { box-shadow: inset 0 0 0 2px #626C7C; }
+.browser { border-radius: 14px; overflow: hidden; background: #02040A; box-shadow: 0 0 0 1px rgba(255,255,255,.16), 0 30px 90px rgba(47,111,235,.25); }
+.browser-bar { display: flex; gap: 7px; padding: 12px 14px; }
+.browser-bar i { width: 11px; height: 11px; border-radius: 50%; background: rgba(255,255,255,.22); }
+.browser img { width: 100%; height: auto; }
+.status figure { display: grid; gap: 12px; min-width: 0; }
+.status .fine { color: var(--dim); }
+
+/* O ponto âmbar vira o sol */
+.dawn .stage { display: flex; align-items: flex-end; background: var(--black); }
+.sunmask { position: absolute; inset: 0; z-index: -2; background: var(--night); }
+.sunmask .cover { object-position: center 60%; filter: saturate(.82) brightness(.9); }
+.sunmask-amber { position: absolute; inset: 0; background: var(--amber); opacity: 0; }
+.dawn-scrim { position: absolute; inset: 0; z-index: -1; background: linear-gradient(0deg, rgba(5,8,15,.94) 0, rgba(5,8,15,.62) 52%, rgba(5,8,15,.12) 100%); }
+.route { display: none; }
+.fx .route { display: block; position: absolute; left: 50%; top: 50%; width: min(56vh, 60vw); height: auto; transform: translate(-50%, -50%); overflow: visible; }
+.dawn-copy { display: grid; gap: 22px; padding-top: 120px; padding-bottom: clamp(40px, 7vh, 88px); }
+.dawn h2 { font-size: min(6.4vw, 11vh, 92px); max-width: 12em; line-height: .96; }
+
+/* Etapas */
+.stages { counter-reset: etapa; padding-top: clamp(80px, 11vh, 140px); }
+.stages li { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 12px clamp(28px, 6vw, 88px); align-items: end; padding-block: clamp(20px, 3.2vh, 36px); border-top: 2px solid var(--ink); counter-increment: etapa; }
+.stages h3 { font-size: min(5.4vw, 9.5vh, 76px); line-height: .96; }
+.stages h3::before { content: "Etapa " counter(etapa); display: block; margin-bottom: 10px; color: var(--blue); font-family: var(--text); font-size: 1.05rem; font-weight: 700; letter-spacing: 0; line-height: 1.2; }
+.stages p { color: var(--paper-dim); font-size: 1.16rem; line-height: 1.38; }
+.sides { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(28px, 4vw, 56px); padding-top: clamp(56px, 8vh, 96px); padding-bottom: clamp(96px, 13vh, 160px); }
+.sides h3 { font-size: 1.9rem; letter-spacing: -.03em; line-height: 1.1; margin-bottom: 4px; font-weight: 700; }
+.sides .note { margin-bottom: 16px; color: var(--paper-dim); }
+.sides li { padding-block: 13px; border-top: 1px solid var(--paper-line); font-size: 1.1rem; line-height: 1.34; }
+.sides strong { font-weight: 700; }
+
+/* Fim */
+.close { background: var(--amber); color: var(--ink); padding-top: clamp(96px, 14vh, 170px); padding-bottom: clamp(56px, 8vh, 96px); }
+.echo { font-size: clamp(1.4rem, 2.6vw, 2.4rem); font-weight: 600; letter-spacing: -.02em; }
+.arrived { font-size: min(calc(var(--col) / 3.3), 40vh, 360px); line-height: 1; margin-top: 2px; }
+.close-row { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 20px clamp(28px, 6vw, 88px); align-items: end; margin-top: clamp(36px, 6vh, 72px); padding-top: 26px; border-top: 2px solid var(--ink); }
+.close h2 { font-size: min(4.6vw, 8vh, 64px); line-height: .98; }
+.close .lede { color: var(--ink); }
+.close-side { display: grid; gap: 22px; justify-items: start; }
+.close .btn { background: var(--ink); color: var(--cream); }
+.close .btn:hover { background: var(--dusk); }
+.close :focus-visible { outline-color: var(--ink); }
+
+/* Acessos: atalhos para o app, a conta e o painel da Prefeitura */
+.access { background: var(--night); padding-block: clamp(80px, 11vh, 140px); }
+.access-head { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 20px clamp(28px, 6vw, 88px); align-items: end; margin-bottom: clamp(36px, 6vh, 72px); }
+.access h2 { font-size: min(6.4vw, 11vh, 92px); line-height: .96; max-width: 10em; }
+.access-head .lede { color: var(--dim); }
+.access-grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: clamp(32px, 5vw, 72px); align-items: start; }
+.access-group { display: grid; gap: 14px; }
+.access-group h3 { color: var(--amber); font-size: .95rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.access-group .note { color: var(--dim); font-size: .95rem; line-height: 1.4; max-width: 40ch; }
+.access-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.access-link { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-content: start; gap: 6px 16px; min-height: 104px; padding: 20px 22px; border-radius: 20px; background: rgba(245,243,236,.06); box-shadow: inset 0 0 0 1px rgba(245,243,236,.16); text-decoration: none; transition: background-color .15s, transform .15s; }
+.access-link:hover { background: rgba(245,243,236,.12); transform: translateY(-2px); }
+.access-link strong { font-size: 1.22rem; font-weight: 700; letter-spacing: -.015em; line-height: 1.2; }
+.access-link span { grid-column: 1; color: var(--dim); font-size: .98rem; line-height: 1.38; }
+.access-link::after { content: "→"; grid-column: 2; grid-row: 1; font-size: 1.4rem; line-height: 1.1; color: var(--amber); transition: transform .15s; }
+.access-link:hover::after { transform: translateX(3px); }
+.access-link[target="_blank"]::after { content: "↗"; }
+.access-link.primary { background: var(--amber); color: var(--ink); box-shadow: none; }
+.access-link.primary span { color: rgba(14,23,38,.78); }
+.access-link.primary::after { color: var(--ink); }
+.access-link.primary:hover { background: #FFC877; }
+.access-list .wide { grid-column: 1 / -1; }
+.access-list li { display: grid; }
+.access-tag { display: inline-block; justify-self: start; grid-column: 1; margin-top: 6px; padding: 3px 10px; border-radius: 20px; background: rgba(242,180,90,.16); color: var(--amber); font-size: .78rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+.access-panel { background: linear-gradient(160deg, var(--dusk), #101C31); box-shadow: inset 0 0 0 1px rgba(245,243,236,.18); }
+.access-panel:hover { background: linear-gradient(160deg, #1D3A6B, #142443); }
+
+/* Menu: botão de três linhas que vira X e painel lateral com todos os acessos */
+.menu-toggle { position: relative; flex: none; width: 46px; height: 46px; border: 0; border-radius: 50%; background: rgba(245,243,236,.1); box-shadow: inset 0 0 0 1.5px rgba(245,243,236,.35); color: var(--cream); cursor: pointer; transition: background-color .2s, box-shadow .2s; }
+.menu-toggle:hover { background: rgba(245,243,236,.2); box-shadow: inset 0 0 0 1.5px rgba(245,243,236,.6); }
+.menu-toggle span { position: absolute; left: 14px; right: 14px; height: 2px; border-radius: 2px; background: currentColor; transition: transform .35s cubic-bezier(.7,0,.2,1), opacity .2s; }
+.menu-toggle span:nth-child(1) { top: 17px; }
+.menu-toggle span:nth-child(2) { top: 22px; right: 18px; }
+.menu-toggle span:nth-child(3) { top: 27px; }
+.menu-toggle[aria-expanded="true"] span:nth-child(1) { transform: translateY(5px) rotate(45deg); }
+.menu-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+.menu-toggle[aria-expanded="true"] span:nth-child(3) { transform: translateY(-5px) rotate(-45deg); }
+.menu { position: fixed; inset: 0; z-index: 100; }
+.menu[hidden] { display: none; }
+.menu-backdrop { position: absolute; inset: 0; background: rgba(5,8,15,.62); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); opacity: 0; transition: opacity .35s; }
+.menu-panel { position: absolute; top: 0; right: 0; bottom: 0; display: flex; flex-direction: column; gap: 26px; width: min(460px, 100%); padding: 18px 24px max(28px, env(safe-area-inset-bottom)); overflow-y: auto; overscroll-behavior: contain; background: radial-gradient(120% 60% at 100% 0, rgba(37,89,199,.35), transparent 60%), linear-gradient(180deg, #0E1726 0, #05080F 100%); box-shadow: -40px 0 90px rgba(0,0,0,.55); border-left: 1px solid rgba(245,243,236,.12); transform: translateX(104%); transition: transform .5s cubic-bezier(.2,.8,.2,1); }
+.menu.is-open .menu-backdrop { opacity: 1; }
+.menu.is-open .menu-panel { transform: none; }
+.menu-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-top: 4px; }
+.menu-head .brand { font-size: 1.15rem; }
+.menu-close { display: grid; place-items: center; width: 46px; height: 46px; border: 0; border-radius: 50%; background: rgba(245,243,236,.1); box-shadow: inset 0 0 0 1.5px rgba(245,243,236,.35); color: var(--cream); cursor: pointer; transition: background-color .2s, transform .3s; }
+.menu-close:hover { background: rgba(245,243,236,.2); transform: rotate(90deg); }
+.menu-close svg { width: 20px; height: 20px; }
+.menu-group { display: grid; gap: 10px; }
+.menu-group h3 { color: var(--amber); font-size: .9rem; font-weight: 700; letter-spacing: .01em; padding-left: 4px; }
+.menu-list { display: grid; gap: 6px; }
+.menu-list li, .menu-chips a { opacity: 0; transform: translateX(28px); transition: opacity .45s, transform .45s cubic-bezier(.2,.8,.2,1); transition-delay: calc(.12s + var(--i, 0) * .045s); }
+.menu.is-open .menu-list li, .menu.is-open .menu-chips a { opacity: 1; transform: none; }
+.menu-item { display: grid; grid-template-columns: 46px minmax(0, 1fr) auto; align-items: center; gap: 14px; padding: 11px 14px 11px 11px; border-radius: 18px; text-decoration: none; transition: background-color .15s; }
+.menu-item:hover { background: rgba(245,243,236,.07); }
+.menu-item::after { content: "→"; color: var(--dim); font-size: 1.15rem; transition: transform .15s, color .15s; }
+.menu-item:hover::after { transform: translateX(3px); color: var(--amber); }
+.menu-item[target="_blank"]::after { content: "↗"; }
+.menu-ic { display: grid; place-items: center; width: 46px; height: 46px; border-radius: 14px; background: rgba(245,243,236,.08); color: var(--amber); }
+.menu-ic svg { width: 22px; height: 22px; }
+.menu-item strong { display: block; font-size: 1.06rem; font-weight: 700; letter-spacing: -.01em; line-height: 1.25; }
+.menu-item small { display: block; color: var(--dim); font-size: .9rem; line-height: 1.35; }
+.menu-item.primary { background: var(--amber); color: var(--ink); }
+.menu-item.primary:hover { background: #FFC877; }
+.menu-item.primary .menu-ic { background: rgba(14,23,38,.12); color: var(--ink); }
+.menu-item.primary small { color: rgba(14,23,38,.72); }
+.menu-item.primary::after { color: var(--ink); }
+.menu-item.to-panel { background: linear-gradient(135deg, rgba(37,89,199,.42), rgba(23,48,90,.5)); box-shadow: inset 0 0 0 1px rgba(150,180,255,.28); }
+.menu-item.to-panel .menu-ic { background: rgba(37,89,199,.55); color: #DCE6FF; }
+.menu-tag { font-style: normal; display: inline-block; margin-left: 6px; padding: 2px 8px; border-radius: 20px; background: rgba(242,180,90,.18); color: var(--amber); font-size: .72rem; font-weight: 700; vertical-align: 2px; }
+.menu-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.menu-chips a { padding: 10px 16px; border-radius: 30px; box-shadow: inset 0 0 0 1.5px rgba(245,243,236,.22); font-size: .98rem; font-weight: 600; text-decoration: none; }
+.menu-chips a:hover { background: rgba(245,243,236,.1); box-shadow: inset 0 0 0 1.5px rgba(245,243,236,.5); }
+.menu-foot { margin-top: auto; padding-top: 18px; border-top: 1px solid rgba(245,243,236,.12); color: var(--dim); font-size: .86rem; line-height: 1.45; }
+html.menu-lock, html.menu-lock body { overflow: hidden; }
+
+footer { background: var(--black); padding-block: 40px; color: var(--dim); font-size: .92rem; line-height: 1.5; }
+footer .wrap { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; }
+footer strong { color: var(--cream); font-weight: 600; }
+footer a { color: var(--cream); }
+footer p + p { margin-top: 10px; }
+
+@media (max-width: 860px) {
+  :root { --gutter: 24px; }
+  .bar nav { display: none; }
+  .bar-end { gap: 10px; }
+  .bar-cta { padding: 8px 16px; }
+  .fx .tabs { inset: 0; }
+  .hero .cover { object-position: 72% center; }
+  .hero-scrim { background: linear-gradient(0deg, rgba(5,8,15,.92) 0, rgba(5,8,15,.55) 48%, rgba(5,8,15,0) 74%), linear-gradient(180deg, rgba(5,8,15,.55) 0, rgba(5,8,15,0) 16%); }
+  .hero h1 { font-size: min(27vw, 22vh); }
+  .arrived { font-size: 26vw; }
+  .statement { font-size: min(14.5vw, 9.5vh); }
+  .pile-say { font-size: min(11vw, 7vh); }
+  .fx .tab { width: 44vw; }
+  .fx .tab b { font-size: .8rem; padding: 8px 10px; }
+  .fx .tab span { font-size: .96rem; padding: 12px 10px 16px; }
+  .fx .tab:nth-child(1) { left: 5%; top: 50%; }
+  .fx .tab:nth-child(2) { left: 51%; top: 54%; }
+  .fx .tab:nth-child(3) { left: 5%; top: 67%; }
+  .fx .tab:nth-child(4) { left: 51%; top: 71%; }
+  .fx .tab:nth-child(5) { left: 28%; top: 85%; }
+  .panel-row, .data-head, .status-grid, .close-row, .stages li, .neq li, .compare-row, .route-row, .access-head, .access-grid { grid-template-columns: minmax(0, 1fr); }
+  .access h2 { font-size: 15vw; }
+  .compare h2 { font-size: 18vw; }
+  .route-row { gap: 14px; }
+  .route-row .big { grid-row: auto; font-size: 16vw; }
+  .route-row.best .route-bar::after { right: -4px; width: 36px; }
+  .route-row p:not(.big), .route-bar { grid-column: 1; grid-row: auto; }
+  .p-open h2 { font-size: min(21vw, 15vh); }
+  .walk-head h2 { font-size: min(19vw, 14vh); }
+  .steps { width: 100%; }
+  .stage-phone { display: none; }
+  .step { min-height: 0; padding-block: 44px; gap: 14px; }
+  .step h3 { font-size: 17vw; }
+  .inline-device { display: block; width: min(76vw, 300px); padding: 8px; margin-bottom: 14px; border-radius: 40px; background: #02040A; box-shadow: 0 0 0 1px rgba(255,255,255,.18), 0 24px 70px rgba(0,0,0,.5); }
+  .inline-device img { width: 100%; height: auto; aspect-ratio: 375 / 812; border-radius: 32px; object-fit: cover; object-position: top; }
+  .watcher { flex-direction: column; align-items: stretch; min-height: 0; }
+  .watcher .cover { position: static; height: 340px; }
+  .watcher::before { display: none; }
+  .watcher h2, .data-head h2, .stages h3 { font-size: 17vw; }
+  .claim { font-size: 13.5vw; }
+  .status h2 { font-size: 19vw; }
+  .dawn h2 { font-size: 15vw; }
+  .close h2 { font-size: 15vw; }
+  .sides, footer .wrap { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 480px) { .split { grid-template-columns: minmax(0, 1fr); } }
+@media (max-height: 540px) { .panel { position: relative; } }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .cue i::after, .walk[data-state="red"] .device::after { animation: none; }
+  .menu-panel, .menu-backdrop, .menu-list li, .menu-chips a, .menu-toggle span { transition: none; }
+  .shot, .btn, .walk { transition: none; }
+}
+</style>
+
+<header class="bar pad" id="bar">
+  <a class="brand" href="#inicio" aria-label="SafeWalk">
+    <svg viewBox="261 260 743 723" aria-hidden="true">
+      <path class="track" d="M836 355H472a136 136 0 0 0 0 272H782a136 136 0 0 1 0 272H427" fill="none" stroke-width="66"/>
+      <path class="prog" id="bar-prog" d="M836 355H472a136 136 0 0 0 0 272H782a136 136 0 0 1 0 272H427" fill="none" stroke-width="66" pathLength="1" stroke-dasharray="1"/>
+      <circle class="ring" cx="909" cy="355" r="74.5" fill="none" stroke-width="41"/>
+      <circle cx="345" cy="899" r="84" fill="#F2B45A"/>
+    </svg>
+    SafeWalk
+  </a>
+  <div class="bar-end">
+  <nav aria-label="Seções">
+    <a href="#mercado">Mercado</a>
+    <a href="#produto">Produto</a>
+    <a href="#dados">Dados</a>
+    <a href="#oportunidade">Oportunidade</a>
+    <a href="#acessos">Acessar</a>
+  </nav>
+  <a class="btn bar-cta" href="/app">Ver o app</a>
+  <button class="menu-toggle" id="menu-toggle" type="button" aria-expanded="false" aria-controls="site-menu" aria-label="Abrir menu">
+    <span></span><span></span><span></span>
+  </button>
+  </div>
+</header>
+
+<div class="menu" id="site-menu" hidden>
+  <div class="menu-backdrop" data-close></div>
+  <aside class="menu-panel" role="dialog" aria-modal="true" aria-label="Menu do SafeWalk">
+    <div class="menu-head">
+      <a class="brand" href="#inicio" data-close>
+        <svg viewBox="261 260 743 723" aria-hidden="true">
+          <path d="M836 355H472a136 136 0 0 0 0 272H782a136 136 0 0 1 0 272H427" fill="none" stroke="currentColor" stroke-width="66"/>
+          <circle cx="909" cy="355" r="74.5" fill="none" stroke="currentColor" stroke-width="41"/>
+          <circle cx="345" cy="899" r="84" fill="#F2B45A"/>
+        </svg>
+        SafeWalk
+      </a>
+      <button class="menu-close" type="button" data-close aria-label="Fechar menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+
+    <div class="menu-group">
+      <h3>App de quem caminha</h3>
+      <ul class="menu-list">
+        <li style="--i: 0"><a class="menu-item primary" href="/app">
+          <span class="menu-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="3"/><path d="M11 18h2"/></svg></span>
+          <span><strong>Abrir o app</strong><small>Mapa, rota a pé e acompanhamento</small></span></a></li>
+        <li style="--i: 1"><a class="menu-item" href="/cadastro">
+          <span class="menu-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9.5" cy="8" r="4"/><path d="M2.5 20.5a7 7 0 0 1 14 0M19 8v6M16 11h6"/></svg></span>
+          <span><strong>Criar conta</strong><small>Gratuita, em menos de um minuto</small></span></a></li>
+        <li style="--i: 2"><a class="menu-item" href="/entrar">
+          <span class="menu-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3.5h4a2.5 2.5 0 0 1 2.5 2.5v12a2.5 2.5 0 0 1-2.5 2.5h-4M9.5 16.5 14 12 9.5 7.5M14 12H3.5"/></svg></span>
+          <span><strong>Entrar</strong><small>Para quem já tem conta</small></span></a></li>
+        <li style="--i: 3"><a class="menu-item" href="/roteiro-demo">
+          <span class="menu-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5.5A2.5 2.5 0 0 1 5.5 3H11v17H5.5A2.5 2.5 0 0 1 3 17.5zM21 5.5A2.5 2.5 0 0 0 18.5 3H13v17h5.5a2.5 2.5 0 0 0 2.5-2.5z"/></svg></span>
+          <span><strong>Como usar</strong><small>Guia passo a passo, depois de entrar</small></span></a></li>
+        <li style="--i: 4"><a class="menu-item" href="/telas-demo">
+          <span class="menu-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="2"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2"/></svg></span>
+          <span><strong>Todas as telas</strong><small>Catálogo do protótipo, depois de entrar</small></span></a></li>
+        <li style="--i: 5"><a class="menu-item" href="/esqueci-senha">
+          <span class="menu-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7.5" cy="15.5" r="4.5"/><path d="m10.7 12.3 9.3-9.3M17 6l3 3M14 9l2 2"/></svg></span>
+          <span><strong>Esqueci minha senha</strong><small>Link por e-mail para criar outra</small></span></a></li>
+      </ul>
+    </div>
+
+    <div class="menu-group">
+      <h3>Prefeitura</h3>
+      <ul class="menu-list">
+        <li style="--i: 6"><a class="menu-item to-panel" href="https://painel.safewalk.recapture.com.br/" target="_blank" rel="noopener" data-panel>
+          <span class="menu-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18M4.5 21V10M9.5 21V10M14.5 21V10M19.5 21V10M2.5 10 12 3.5 21.5 10z"/></svg></span>
+          <span><strong>Painel administrativo <em class="menu-tag">Demonstração</em></strong><small>Fila de relatos, mapa e pontos críticos<span class="sr"> (abre em nova aba)</span></small></span></a></li>
+      </ul>
+    </div>
+
+    <div class="menu-group">
+      <h3>Nesta apresentação</h3>
+      <div class="menu-chips">
+        <a href="#mercado" data-close style="--i: 7">Mercado</a>
+        <a href="#produto" data-close style="--i: 8">Produto</a>
+        <a href="#dados" data-close style="--i: 9">Dados</a>
+        <a href="#oportunidade" data-close style="--i: 10">Oportunidade</a>
+        <a href="#acessos" data-close style="--i: 11">Acessos</a>
+      </div>
+    </div>
+
+    <p class="menu-foot">Protótipo em validação, sem parceria firmada com a Prefeitura. Em emergência, ligue 190.</p>
+  </aside>
+</div>
+
+<main>
+  <section class="scene hero" id="inicio" style="--len: 240vh" aria-labelledby="t-hero">
+    <div class="stage pad">
+      <video class="cover" id="hero-video" autoplay muted loop playsinline preload="auto" poster="media/caminhada-capa.jpg" aria-hidden="true">
+        <source src="media/caminhada.mp4" type="video/mp4">
+      </video>
+      <div class="hero-scrim"></div>
+      <div class="hero-dark" id="hero-dark"></div>
+      <div class="hero-a pad" id="hero-a">
+        <h1 class="big" id="t-hero">
+          <span class="ln"><span>Me avisa</span></span>
+          <span class="ln"><span>quando</span></span>
+          <span class="ln"><span>chegar.</span></span>
+        </h1>
+        <div class="hero-note">
+          <p>A frase que a gente diz para quem ama, toda vez que alguém volta a pé à noite.</p>
+          <span class="cue"><i aria-hidden="true"></i>Role a página</span>
+        </div>
+      </div>
+      <div class="hero-b pad" id="hero-b">
+        <p class="big statement">São Paulo sabe muito sobre as suas calçadas. Quem caminha nelas, quase nada.</p>
+        <p class="lede">O SafeWalk reúne dados públicos da rua, rota a pé e pessoas de confiança em um único app. Buscamos investimento para levar o protótipo às ruas, começando pela Bela Vista.</p>
+        <div class="actions">
+          <a class="btn" href="#oportunidade">Ver a oportunidade</a>
+          <a class="btn line" href="#produto">Como funciona</a>
+          <a class="btn line" href="#acessos">Acessar o SafeWalk</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="scene count" id="count" style="--len: 230vh" aria-labelledby="t-problema">
+    <div class="stage pad">
+      <p class="big digits" id="digits">49.349</p>
+      <div id="count-copy">
+        <h2 class="big" id="t-problema">sinistros com pedestres registrados na capital.</h2>
+        <p class="fine" style="margin: 14px auto 0">Infosiga, Detran-SP, arquivos públicos nomeados de 2015 a 2026. Lote importado em 30/10/2026. O período disponível varia e 4.526 registros não têm coordenadas.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="scene pile" id="pile" style="--len: 270vh" aria-label="Dados espalhados em portais">
+    <div class="stage pad">
+      <p class="big pile-say" id="pile-say">A cidade guarda essas informações. Só que cada uma mora em um portal diferente, e ninguém abre cinco sites antes de sair do metrô.</p>
+      <div class="tabs" id="tabs">
+        <div class="tab" style="--x: 4%; --y: 58%" data-r="-5"><b>GeoSampa</b><span>Calçadas e iluminação</span></div>
+        <div class="tab" style="--x: 24%; --y: 70%" data-r="4"><b>SP156</b><span>Solicitações de zeladoria</span></div>
+        <div class="tab" style="--x: 44%; --y: 56%" data-r="-3"><b>GeoSampa e SGB</b><span>Áreas que podem alagar</span></div>
+        <div class="tab" style="--x: 62%; --y: 72%" data-r="6"><b>Infosiga</b><span>Sinistros com pedestres</span></div>
+        <div class="tab" style="--x: 74%; --y: 52%" data-r="-6"><b>SSP-SP</b><span>Crimes registrados</span></div>
+      </div>
+      <div class="merge" id="merge" aria-hidden="true">
+        <div class="merge-tile" id="merge-tile">
+          <svg viewBox="261 260 743 723"><path d="M836 355H472a136 136 0 0 0 0 272H782a136 136 0 0 1 0 272H427" fill="none" stroke="#F5F3EC" stroke-width="66"/><circle cx="909" cy="355" r="74.5" fill="none" stroke="#F5F3EC" stroke-width="41"/><circle cx="345" cy="899" r="84" fill="#F2B45A"/></svg>
+        </div>
+        <p class="big" id="merge-say">Tudo em um único app.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="mercado" aria-labelledby="t-mercado">
+    <div class="panel p-open pad"><h2 class="big" id="t-mercado">Milhões caminham todos os dias. Muita gente caminha com medo.</h2></div>
+    <div class="panel p-blue pad">
+      <p class="big panel-figure" style="--glyphs: 2.6">6,5 mi</p>
+      <div class="panel-row">
+        <p class="panel-text">viagens a pé por dia na cidade de São Paulo.</p>
+        <p class="fine">Caminhada é 31% de 21,07 milhões de viagens diárias. Pesquisa OD 2023, divulgada pela Prefeitura. Multiplicação nossa.</p>
+      </div>
+    </div>
+    <div class="panel p-amber pad">
+      <p class="big panel-figure" style="--glyphs: 2.5">56,8%</p>
+      <div class="panel-row">
+        <p class="panel-text">das mulheres no Brasil têm medo de circular à noite perto de casa. 40,9% deixaram de sair à noite em 12 meses por medo.</p>
+        <p class="fine">Datafolha para o Fórum Brasileiro de Segurança Pública, março de 2026.</p>
+      </div>
+    </div>
+    <div class="panel p-cream pad">
+      <p class="big panel-figure" style="--glyphs: 3.4">150 mil+</p>
+      <div class="panel-row">
+        <p class="panel-text">celulares roubados ou furtados na capital em 2025.</p>
+        <p class="fine">SSP-SP, conforme a imprensa. As apurações variam entre 154 mil e 162 mil.</p>
+      </div>
+    </div>
+    <div class="panel p-black pad">
+      <p class="big panel-figure" style="--glyphs: 5.4">US$ 489,5 mi</p>
+      <div class="panel-row">
+        <p class="panel-text">foi a receita da Life360 em 2025, com 95,8 milhões de usuários mensais. Já existe gente pagando por localização e segurança.</p>
+        <p class="fine">Resultados anuais da Life360. Referência internacional, não uma projeção do SafeWalk.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="walk" id="produto" data-state="calm" aria-labelledby="t-produto">
+    <div class="wrap walk-head">
+      <h2 class="big" id="t-produto">Uma volta para casa, em quatro momentos.</h2>
+      <p class="lede">Telas capturadas do protótipo em funcionamento, com horários de exemplo.</p>
+    </div>
+    <div class="wrap story" id="story">
+      <div class="stage-phone" aria-hidden="true">
+        <span class="ghost" id="ghost">19:42</span>
+        <div class="device" id="device">
+          <div class="device-screen">
+            <img class="shot is-on" src="img/contatos.jpg" width="375" height="812" alt="">
+            <img class="shot" src="img/trajeto.jpg" width="375" height="812" alt="">
+            <img class="shot" src="img/alerta.jpg" width="375" height="812" alt="">
+            <img class="shot" src="img/sos.jpg" width="375" height="812" alt="">
+          </div>
+        </div>
+      </div>
+      <ol class="steps">
+        <li class="step" data-shot="0" data-state="calm" data-time="19:42">
+          <div class="inline-device"><img src="img/contatos.jpg" width="375" height="812" alt="Tela de contatos de segurança com dois contatos e convite aceito." loading="lazy"></div>
+          <p class="time">19:42</p>
+          <h3 class="big">Antes de sair</h3>
+          <p>Você compara as rotas e escolhe quem acompanha. Só entra quem aceitou o convite.</p>
+        </li>
+        <li class="step" data-shot="1" data-state="calm" data-time="19:44">
+          <div class="inline-device"><img src="img/trajeto.jpg" width="375" height="812" alt="Tela do trajeto com instrução de rota, mapa ilustrativo e botão SOS." loading="lazy"></div>
+          <p class="time">19:44</p>
+          <h3 class="big">No caminho</h3>
+          <p>Quem acompanha vê o roteiro e a última posição recebida, com o horário. O SOS fica sempre à vista.</p>
+        </li>
+        <li class="step" data-shot="2" data-state="warn" data-time="19:49">
+          <div class="inline-device"><img src="img/alerta.jpg" width="375" height="812" alt="Tela perguntando se está tudo bem, com contagem regressiva e teclado de PIN." loading="lazy"></div>
+          <p class="time">19:49</p>
+          <h3 class="big">Saiu do previsto</h3>
+          <p>Passou do horário ou o sinal sumiu: o app pergunta se está tudo bem. O prazo corre no servidor, então continua valendo mesmo se o celular desligar.</p>
+        </li>
+        <li class="step" data-shot="3" data-state="red" data-time="19:50">
+          <div class="inline-device"><img src="img/sos.jpg" width="375" height="812" alt="Tela de alerta ativo mostrando o que chegou aos contatos e as etapas simuladas." loading="lazy"></div>
+          <p class="time">19:50</p>
+          <h3 class="big">Alerta ativo</h3>
+          <p>Os contatos veem o alerta no link. Só o PIN cancela. Sob ameaça, um segundo PIN finge encerrar e avisa em silêncio.</p>
+        </li>
+      </ol>
+    </div>
+    <div class="wrap"><p class="fine">Nesta conta de demonstração, a posição é fictícia e as etapas de câmeras e GCM são simuladas.</p></div>
+  </section>
+
+  <section class="watcher" id="watcher" aria-labelledby="t-acompanha">
+    <img class="cover" id="watcher-img" src="media/casa.jpg" width="1672" height="941" alt="" loading="lazy">
+    <div class="wrap watcher-copy">
+      <h2 class="big" id="t-acompanha">Do outro lado, alguém acompanha.</h2>
+      <p class="lede">Quem você escolheu abre um link e vê o roteiro, a última posição recebida e o horário dela. Ao encerrar o trajeto, o link deixa de mostrar sua localização.</p>
+    </div>
+  </section>
+
+  <section class="compare" id="rotas" aria-labelledby="t-rotas">
+    <div class="wrap">
+      <h2 class="big" id="t-rotas">Um minuto a mais. 43% menos registros.</h2>
+      <div class="routes">
+        <div class="route-row">
+          <p class="big">22 min</p>
+          <span class="route-bar" style="--w: 100%" aria-hidden="true"></span>
+          <p>Mais rápida: 485 pontos na leitura de registros</p>
+        </div>
+        <div class="route-row best">
+          <p class="big">23 min</p>
+          <span class="route-bar" style="--w: 57.4%" aria-hidden="true"></span>
+          <p>Menos registros conhecidos: 278 pontos</p>
+        </div>
+      </div>
+      <div class="compare-row">
+        <p class="lede">O app soma furtos, roubos, agressões, atropelamentos e relatos perto de cada trecho, pesando o horário da saída. Quem caminha vê o motivo e decide.</p>
+        <p class="fine">Cálculo real à noite, da Avenida Paulista à Rua Frei Caneca, em 08/11/2026. Mais de 630 mil ocorrências da SSP-SP. Mostra o que já foi registrado e não indica que um caminho seja seguro. A SSP não publica o local de crimes sexuais, que ficam fora da conta.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="paper" id="dados" aria-labelledby="t-dados">
+    <div class="wrap data-head">
+      <h2 class="big" id="t-dados">Cada dado com fonte, data e limite.</h2>
+      <p class="lede">O app nunca carimba uma rua como segura. Ele mostra o que foi registrado e diz o que o registro não prova. Tratar fontes tão diferentes com esse rigor é o que mais dá trabalho para copiar.</p>
+    </div>
+    <ul class="wrap neq">
+      <li><p class="big claim">Menos registros <span class="ne" aria-hidden="true">≠</span><span class="sr">não significa</span> <span class="not">rota segura</span></p><p class="meta"><strong>Crimes registrados</strong>Mais de 630 mil na região, SSP-SP</p></li>
+      <li><p class="big claim">Luminária cadastrada <span class="ne" aria-hidden="true">≠</span><span class="sr">não significa</span> <span class="not">luz acesa</span></p><p class="meta"><strong>Iluminação pública</strong>300 na amostra piloto</p></li>
+      <li><p class="big claim">Protocolo finalizado <span class="ne" aria-hidden="true">≠</span><span class="sr">não significa</span> <span class="not">reparo feito</span></p><p class="meta"><strong>Solicitações SP156</strong>1.255 na área piloto</p></li>
+      <li><p class="big claim">Sem registro <span class="ne" aria-hidden="true">≠</span><span class="sr">não significa</span> <span class="not">sem risco</span></p><p class="meta"><strong>Mancha de inundação</strong>300 na amostra piloto. É um modelo.</p></li>
+      <li><p class="big claim">Largura registrada <span class="ne" aria-hidden="true">≠</span><span class="sr">não significa</span> <span class="not">passagem livre</span></p><p class="meta"><strong>Calçadas</strong>300 na amostra piloto</p></li>
+      <li><p class="big claim">Semáforo cadastrado <span class="ne" aria-hidden="true">≠</span><span class="sr">não significa</span> <span class="not">sinal funcionando</span></p><p class="meta"><strong>Semáforos CET</strong>6,4 mil na capital</p></li>
+      <li><p class="big claim">Endereço no mapa <span class="ne" aria-hidden="true">≠</span><span class="sr">não significa</span> <span class="not">aberto 24 horas</span></p><p class="meta"><strong>Delegacias e hospitais</strong>93 e 98 na capital</p></li>
+      <li><p class="big claim">Chuva estimada <span class="ne" aria-hidden="true">≠</span><span class="sr">não significa</span> <span class="not">rua alagada</span></p><p class="meta"><strong>Chuva recente</strong>Modelo Open-Meteo</p></li>
+      <li><p class="big claim">Coordenada registrada <span class="ne" aria-hidden="true">≠</span><span class="sr">não significa</span> <span class="not">local exato</span></p><p class="meta"><strong>Sinistros com pedestres</strong>49.349 na capital, precisão desconhecida</p></li>
+    </ul>
+  </section>
+
+  <section class="status" aria-labelledby="t-status">
+    <div class="wrap">
+      <h2 class="big" id="t-status">O produto já roda. Falta ligar a cidade.</h2>
+      <div class="status-grid">
+        <div class="split">
+          <div class="lit" id="lit">
+            <h3>Funciona hoje</h3>
+            <ul class="lamps">
+              <li>Mapa, busca e rota a pé</li>
+              <li>Comparação de rotas por registros</li>
+              <li>Convite e link com prazo</li>
+              <li>Alertas com prazo no servidor</li>
+              <li>PIN e PIN de coação</li>
+              <li>Relatos da comunidade</li>
+            </ul>
+          </div>
+          <div class="off">
+            <h3>Ainda simulado</h3>
+            <ul class="lamps">
+              <li>Smart Sampa e câmeras</li>
+              <li>Acionamento da GCM</li>
+              <li>Envio de relatos ao SP156</li>
+              <li>Painel com dados reais</li>
+              <li>Detecção de parada na rua</li>
+            </ul>
+          </div>
+        </div>
+        <figure>
+          <div class="browser">
+            <div class="browser-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+            <img src="img/painel.jpg" width="800" height="500" alt="Painel de gestão com indicadores, pontos críticos e fila de solicitações, marcado como demonstração." loading="lazy">
+          </div>
+          <figcaption class="fine">Painel de gestão pensado para municípios. Todos os números desta imagem são fictícios.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="scene dawn" id="oportunidade" style="--len: 340vh" aria-labelledby="t-oportunidade">
+    <div class="stage" id="dawn-stage">
+      <div class="sunmask" id="sunmask">
+        <video class="cover" id="dawn-video" muted loop playsinline preload="none" poster="media/amanhecer-capa.jpg" aria-hidden="true">
+          <source src="media/amanhecer.mp4" type="video/mp4">
+        </video>
+        <div class="sunmask-amber" id="sun-amber"></div>
+      </div>
+      <div class="dawn-scrim" id="dawn-scrim"></div>
+      <svg class="route" id="route" viewBox="261 260 743 723" aria-hidden="true">
+        <path id="route-track" d="M836 355H472a136 136 0 0 0 0 272H782a136 136 0 0 1 0 272H427" fill="none" stroke="rgba(245,243,236,.16)" stroke-width="66"/>
+        <path id="route-line" d="M836 355H472a136 136 0 0 0 0 272H782a136 136 0 0 1 0 272H427" fill="none" stroke="#F5F3EC" stroke-width="66" pathLength="1" stroke-dasharray="1"/>
+        <circle cx="909" cy="355" r="74.5" fill="none" stroke="#F5F3EC" stroke-width="41"/>
+        <circle id="sun" cx="345" cy="899" r="84" fill="#F2B45A"/>
+      </svg>
+      <div class="wrap dawn-copy" id="dawn-copy">
+        <h2 class="big" id="t-oportunidade">A oportunidade: tirar o SafeWalk do protótipo e colocar na rua.</h2>
+        <p class="lede">Começando pela Bela Vista, o investimento paga três etapas, nesta ordem. Cada uma responde a uma pergunta antes de gastarmos na seguinte.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="paper" aria-label="Etapas e negócio">
+    <ol class="wrap stages">
+      <li>
+        <h3 class="big">As pessoas usam?</h3>
+        <p>Um grupo de voluntários caminha pela Bela Vista e arredores com o app e seus contatos. Verificamos GPS, tela bloqueada e avisos em aparelhos reais.</p>
+      </li>
+      <li>
+        <h3 class="big">Aguenta a operação?</h3>
+        <p>Contratamos mapas e rotas com garantia de serviço, hospedagem contínua e publicação nas lojas de aplicativos. Os serviços gratuitos de hoje não têm essa garantia.</p>
+      </li>
+      <li>
+        <h3 class="big">Quem paga?</h3>
+        <p>Testamos as três frentes de receita e buscamos autorização para integrar SP156, Smart Sampa e GCM, onde a cidade quiser participar.</p>
+      </li>
+    </ol>
+    <div class="wrap sides">
+      <div>
+        <h3>Grátis para o cidadão, licenciado para a cidade</h3>
+        <p class="note">Hipóteses a validar. Ainda não há receita.</p>
+        <ul>
+          <li><strong>Subprefeituras:</strong> painel para priorizar calçadas, iluminação e obras a partir dos relatos</li>
+          <li><strong>Segurança Urbana e GCM:</strong> onde e quando relatos e pedidos de ajuda se concentram, para planejar rondas</li>
+          <li><strong>Empresas e universidades:</strong> acompanhamento para quem volta à noite, pago pela organização</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Para onde vai o investimento</h3>
+        <p class="note">Na ordem das etapas acima.</p>
+        <ul>
+          <li>Testes em aparelhos reais e publicação nas lojas</li>
+          <li>Mapas, rotas e hospedagem de produção</li>
+          <li>Integrações com serviços públicos</li>
+          <li>Segurança, privacidade e adequação à LGPD</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="close" aria-labelledby="t-proximo">
+    <div class="wrap">
+      <p class="echo">Me avisa quando chegar.</p>
+      <p class="big arrived" id="arrived">Cheguei.</p>
+      <div class="close-row">
+        <h2 class="big" id="t-proximo">O próximo passo é uma conversa.</h2>
+        <div class="close-side">
+          <p class="lede">Mostramos o protótipo funcionando ao vivo e abrimos o valor da rodada, o prazo e as metas de cada etapa.</p>
+          <a class="btn" href="/app">Ver o app</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="access" id="acessos" aria-labelledby="t-acessos">
+    <div class="wrap">
+      <div class="access-head">
+        <h2 class="big" id="t-acessos">Acesse o SafeWalk.</h2>
+        <p class="lede">Tudo o que esta apresentação mostra está no ar. Escolha por onde começar: o app de quem caminha ou o painel pensado para a Prefeitura.</p>
+      </div>
+      <div class="access-grid">
+        <div class="access-group" aria-labelledby="t-acesso-cidadao">
+          <h3 id="t-acesso-cidadao">Para quem caminha</h3>
+          <p class="note">Funciona no navegador do celular ou do computador. A conta é gratuita.</p>
+          <ul class="access-list">
+            <li class="wide"><a class="access-link primary" href="/app"><strong>Abrir o app</strong><span>Mapa, rota a pé com o motivo de cada alerta e acompanhamento por quem você confia.</span></a></li>
+            <li><a class="access-link" href="/cadastro"><strong>Criar conta</strong><span>Nome, e-mail e senha. Leva menos de um minuto.</span></a></li>
+            <li><a class="access-link" href="/entrar"><strong>Entrar</strong><span>Já tem conta? Continue de onde parou.</span></a></li>
+            <li><a class="access-link" href="/roteiro-demo"><strong>Como usar</strong><span>Guia passo a passo do trajeto, dos alertas e do PIN. Depois de entrar na conta.</span></a></li>
+            <li><a class="access-link" href="/esqueci-senha"><strong>Esqueci minha senha</strong><span>Receba um link por e-mail para criar uma nova senha.</span></a></li>
+          </ul>
+        </div>
+        <div class="access-group" aria-labelledby="t-acesso-prefeitura">
+          <h3 id="t-acesso-prefeitura">Para a Prefeitura</h3>
+          <p class="note">Buracos, semáforos com defeito e outros problemas que as pessoas escolheram enviar pelo app chegam ao painel com prioridade sugerida e mapa.</p>
+          <ul class="access-list">
+            <li class="wide"><a class="access-link access-panel" href="https://painel.safewalk.recapture.com.br" target="_blank" rel="noopener" data-panel><strong>Painel da Prefeitura</strong><span>Fila de relatos, mapa, pontos críticos e andamento de cada caso. Acesso para operadores cadastrados.<span class="sr"> (abre em nova aba)</span></span><em class="access-tag">Demonstração</em></a></li>
+            <li class="wide"><a class="access-link" href="https://painel.safewalk.recapture.com.br/" target="_blank" rel="noopener" data-panel><strong>Recuperar acesso de operador</strong><span>No painel, use "Esqueci minha senha" para receber um link por e-mail.<span class="sr"> (abre em nova aba)</span></span></a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+<script>
+  // Em desenvolvimento, o painel roda localmente (npm run dev:admin).
+  if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname))
+    document.querySelectorAll('[data-panel]').forEach(function (link) {
+      link.href = 'http://127.0.0.1:5190/';
+    });
+
+  // Menu lateral: abre e fecha com o botão, o X, o fundo, um link ou Esc; o foco fica dentro dele.
+  (function () {
+    var toggle = document.getElementById('menu-toggle');
+    var menu = document.getElementById('site-menu');
+    if (!toggle || !menu) return;
+    var panel = menu.querySelector('.menu-panel');
+    var closeTimer = 0;
+    function focusables() {
+      return Array.prototype.slice.call(panel.querySelectorAll('a[href], button'));
+    }
+    function open() {
+      clearTimeout(closeTimer);
+      menu.hidden = false;
+      void menu.offsetWidth;
+      menu.classList.add('is-open');
+      toggle.setAttribute('aria-expanded', 'true');
+      toggle.setAttribute('aria-label', 'Fechar menu');
+      document.documentElement.classList.add('menu-lock');
+      panel.querySelector('.menu-close').focus();
+    }
+    function close(returnFocus) {
+      menu.classList.remove('is-open');
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.setAttribute('aria-label', 'Abrir menu');
+      document.documentElement.classList.remove('menu-lock');
+      closeTimer = setTimeout(function () { menu.hidden = true; }, 450);
+      if (returnFocus) toggle.focus();
+    }
+    toggle.addEventListener('click', function () {
+      if (toggle.getAttribute('aria-expanded') === 'true') close(true);
+      else open();
+    });
+    menu.addEventListener('click', function (event) {
+      var target = event.target.closest('[data-close], .menu-item');
+      if (target) close(!target.matches('a'));
+    });
+    document.addEventListener('keydown', function (event) {
+      if (menu.hidden) return;
+      if (event.key === 'Escape') close(true);
+      if (event.key !== 'Tab') return;
+      var items = focusables();
+      var first = items[0];
+      var last = items[items.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    });
+  })();
+</script>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <p><strong>SafeWalk é um protótipo em validação, ainda sem operação comercial.</strong> Nenhuma parceria com a Prefeitura, a GCM ou outros órgãos foi firmada. O app não garante a segurança de nenhum caminho. Em emergência, ligue 190.</p>
+      <p>Projeto nascido no Global Solution FIAP, Smart Cities, 2026.</p>
+      <p>Vídeos e fotos de ambientação gerados por IA, com ChatGPT e Gemini. As telas do app são capturas reais do protótipo.</p>
+    </div>
+    <p>Fontes: <a href="https://www.ssp.sp.gov.br/estatistica/consultas" rel="noopener">SSP-SP, dados criminais</a> de 2025 e 2026, <a href="https://infosiga.detran.sp.gov.br/" rel="noopener">Infosiga, Detran-SP</a> (CC BY 4.0), <a href="https://geosampa.prefeitura.sp.gov.br/" rel="noopener">GeoSampa</a>, SP156, SGB e <a href="https://open-meteo.com/" rel="noopener">Open-Meteo</a>. Amostras do piloto de 28/10/2026, recortes limitados e sem cobertura total. Mercado: <a href="https://gestaourbana.prefeitura.sp.gov.br/noticias/populacao-paulistana-circula-menos-pela-primeira-vez-na-historia-revela-estudo-da-prefeitura/" rel="noopener">Pesquisa OD 2023</a>, <a href="https://sbtnews.sbt.com.br/noticia/brasil/mais-da-metade-das-mulheres-teme-andar-na-rua-a-noite-4-em-10-deixam-de-sair-por-medo-da-violencia" rel="noopener">Datafolha e FBSP</a>, <a href="https://www.bnewssaopaulo.com.br/noticias/policia/reforco-policial-e-tecnologia-fazem-roubos-de-celulares-cairem-em-sp-entenda.html" rel="noopener">SSP-SP via BNews</a> e <a href="https://investors.life360.com/news-releases/news-release-details/life360-reports-record-q4-2025-results" rel="noopener">Life360</a>.</p>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>
+(() => {
+  const $ = (selector) => document.querySelector(selector);
+  const $$ = (selector) => [...document.querySelectorAll(selector)];
+  const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const heroVideo = $('#hero-video');
+  const dawnVideo = $('#dawn-video');
+
+  if (calm) {
+    heroVideo.removeAttribute('autoplay');
+    heroVideo.pause();
+  } else {
+    // Cada vídeo só toca enquanto está na tela. Se o navegador recusar, fica a imagem de capa.
+    const players = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) entry.target.play().catch(() => {});
+        else entry.target.pause();
+      });
+    }, { threshold: 0.05 });
+    players.observe(heroVideo);
+    players.observe(dawnVideo);
+  }
+
+  // A tela do celular, o horário e a cor da seção seguem o passo que está no meio da tela.
+  const walk = $('#produto');
+  const steps = $$('.step');
+  const shots = $$('.shot');
+  const ghost = $('#ghost');
+  const stepObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      const index = Number(entry.target.dataset.shot);
+      shots.forEach((shot, i) => shot.classList.toggle('is-on', i === index));
+      walk.dataset.state = entry.target.dataset.state;
+      ghost.textContent = entry.target.dataset.time;
+    });
+  }, { rootMargin: '-45% 0px -45% 0px' });
+  steps.forEach((step) => stepObserver.observe(step));
+
+  if (calm || !window.gsap || !window.ScrollTrigger) return;
+  gsap.registerPlugin(ScrollTrigger);
+  document.documentElement.classList.add('fx');
+
+  const scrub = (trigger, extra = {}) => ({ trigger, start: 'top top', end: 'bottom bottom', scrub: 0.6, invalidateOnRefresh: true, ...extra });
+
+  // Logo da barra: o S se completa conforme a página avança.
+  gsap.fromTo('#bar-prog', { attr: { 'stroke-dashoffset': 1 } }, {
+    attr: { 'stroke-dashoffset': 0 }, ease: 'none',
+    scrollTrigger: { start: 0, end: 'max', scrub: true },
+  });
+
+  // Depois da abertura, a barra vira uma cápsula legível sobre qualquer fundo.
+  ScrollTrigger.create({ start: 160, end: 'max', toggleClass: { targets: '#bar', className: 'pill' } });
+
+  // Abertura: as linhas sobem uma vez, ao carregar.
+  gsap.from('.hero h1 .ln > span', { yPercent: 112, duration: 1.1, ease: 'power4.out', stagger: 0.12, delay: 0.15 });
+
+  gsap.set('#hero-b', { autoAlpha: 0, y: 70 });
+  gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: scrub('.hero') })
+    .to('#hero-a', { autoAlpha: 0, yPercent: -14, scale: 1.05, transformOrigin: 'left bottom', duration: 0.42 }, 0)
+    .to('#hero-video', { scale: 1.14, duration: 1 }, 0)
+    .to('#hero-dark', { opacity: 0.62, duration: 0.4 }, 0.3)
+    .to('#hero-b', { autoAlpha: 1, y: 0, duration: 0.34 }, 0.42);
+
+  // 49.349: a câmera sai de dentro das pedras até os números aparecerem inteiros.
+  gsap.set('#count-copy', { autoAlpha: 0, y: 40 });
+  gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: scrub('.count') })
+    .fromTo('#digits', { scale: 7 }, { scale: 1, duration: 0.7, ease: 'power2.out' }, 0)
+    .to('#count-copy', { autoAlpha: 1, y: 0, duration: 0.2 }, 0.72);
+
+  // Cinco sites viram um app.
+  const tabs = $$('.tab');
+  const stage = $('.pile .stage');
+  tabs.forEach((tab) => gsap.set(tab, { rotation: Number(tab.dataset.r) }));
+  gsap.set('#merge-tile', { scale: 0 });
+  gsap.set('#merge-say', { autoAlpha: 0, y: 30 });
+  const pile = gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: scrub('.pile') });
+  tabs.forEach((tab, index) => {
+    const center = (axis) => {
+      const area = stage.getBoundingClientRect();
+      const box = tab.getBoundingClientRect();
+      gsap.getProperty(tab, 'x');
+      return axis === 'x'
+        ? area.left + area.width / 2 - (box.left + box.width / 2) + gsap.getProperty(tab, 'x')
+        : area.top + area.height / 2 - (box.top + box.height / 2) + gsap.getProperty(tab, 'y');
+    };
+    pile.to(tab, { x: () => center('x'), y: () => center('y'), rotation: 0, scale: 0.25, duration: 0.42, ease: 'power2.in' }, 0.3 + index * 0.03)
+      .to(tab, { autoAlpha: 0, duration: 0.05 }, 0.7 + index * 0.03);
+  });
+  pile.to('#pile-say', { autoAlpha: 0, y: -40, duration: 0.2 }, 0.3)
+    .to('#merge-tile', { scale: 1, duration: 0.2, ease: 'back.out(1.8)' }, 0.72)
+    .to('#merge-say', { autoAlpha: 1, y: 0, duration: 0.14 }, 0.82);
+
+  // Celular gira de leve durante a história.
+  gsap.fromTo('#device', { rotateY: -18, rotateX: 6 }, {
+    rotateY: 14, rotateX: -4, ease: 'none',
+    scrollTrigger: { trigger: '#story', start: 'top top', end: 'bottom bottom', scrub: 0.8 },
+  });
+
+  gsap.fromTo('#watcher-img', { scale: 1.2 }, {
+    scale: 1, ease: 'none',
+    scrollTrigger: { trigger: '#watcher', start: 'top bottom', end: 'bottom bottom', scrub: true },
+  });
+
+  // As duas rotas são percorridas conforme a seção chega.
+  $$('.route-bar').forEach((bar) => {
+    gsap.fromTo(bar, { clipPath: 'inset(-60px 100% -60px 0)' }, {
+      clipPath: 'inset(-60px -60px -60px 0)', ease: 'none',
+      scrollTrigger: { trigger: bar, start: 'top 92%', end: 'top 55%', scrub: 0.5 },
+    });
+  });
+
+  // Cada "≠" gira até o lugar quando a linha chega.
+  $$('.claim .ne').forEach((sign) => {
+    gsap.fromTo(sign, { rotation: -180 }, {
+      rotation: 0, ease: 'none',
+      scrollTrigger: { trigger: sign, start: 'top 95%', end: 'top 62%', scrub: 0.5 },
+    });
+  });
+
+  // Postes acendem um a um.
+  ScrollTrigger.create({
+    trigger: '#lit', start: 'top 75%', once: true,
+    onEnter: () => $$('#lit li').forEach((lamp, i) => setTimeout(() => lamp.classList.add('on'), i * 260)),
+  });
+
+  // O ponto âmbar do logo cresce até virar o amanhecer.
+  const dawnStage = $('#dawn-stage');
+  const sunmask = $('#sunmask');
+  const sun = $('#sun');
+  const glow = { grow: 0 };
+  let dot = { x: 0, y: 0, r: 40, far: 2000 };
+  const measure = () => {
+    const area = dawnStage.getBoundingClientRect();
+    const box = sun.getBoundingClientRect();
+    const x = box.left - area.left + box.width / 2;
+    const y = box.top - area.top + box.height / 2;
+    dot = { x, y, r: box.width / 2, far: Math.hypot(Math.max(x, area.width - x), Math.max(y, area.height - y)) + 10 };
+  };
+  const paintSun = () => {
+    sunmask.style.clipPath = `circle(${dot.r + (dot.far - dot.r) * glow.grow}px at ${dot.x}px ${dot.y}px)`;
+  };
+  gsap.set('#sun-amber', { opacity: 1 });
+  gsap.set('#route-line', { attr: { 'stroke-dashoffset': 1 } });
+  gsap.set('#dawn-copy', { autoAlpha: 0, y: 50 });
+  gsap.set('#dawn-scrim', { opacity: 0 });
+  ScrollTrigger.addEventListener('refresh', () => { measure(); paintSun(); });
+  measure();
+  paintSun();
+  gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: scrub('.dawn') })
+    .to('#route-line', { attr: { 'stroke-dashoffset': 0 }, duration: 0.3 }, 0)
+    .to(glow, { grow: 1, duration: 0.42, ease: 'power2.in', onUpdate: paintSun }, 0.34)
+    .to('#route', { autoAlpha: 0, duration: 0.1 }, 0.42)
+    .to('#sun-amber', { opacity: 0, duration: 0.2 }, 0.62)
+    .to('#dawn-scrim', { opacity: 1, duration: 0.14 }, 0.8)
+    .to('#dawn-copy', { autoAlpha: 1, y: 0, duration: 0.14 }, 0.82);
+
+  // "Cheguei." cresce ao entrar.
+  gsap.fromTo('#arrived', { scale: 0.72, transformOrigin: 'left bottom' }, {
+    scale: 1, ease: 'none',
+    scrollTrigger: { trigger: '.close', start: 'top bottom', end: 'top 25%', scrub: 0.5 },
+  });
+
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => ScrollTrigger.refresh());
+  addEventListener('load', () => ScrollTrigger.refresh());
+})();
+</script>
+</body></html>

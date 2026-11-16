@@ -1,0 +1,13 @@
+node_modules
+dist
+.expo
+coverage
+work
+graphify-out/
+package-lock.json
+*.png
+*.jpg
+*.ico
+*.svg
+assets/expo.icon
+**/assets/expo.icon/**

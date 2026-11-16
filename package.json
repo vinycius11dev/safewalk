@@ -1,0 +1,40 @@
+{
+  "name": "safewalk",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "dev": "npm run build -w @safewalk/contracts && concurrently -k -n api,expo \"npm run dev -w @safewalk/api\" \"npm run web -w @safewalk/mobile\"",
+    "dev:api": "npm run build -w @safewalk/contracts && npm run dev -w @safewalk/api",
+    "dev:admin": "npm run build -w @safewalk/contracts && npm run dev -w @safewalk/admin",
+    "dev:mobile": "npm run build -w @safewalk/contracts && npm run start -w @safewalk/mobile",
+    "build": "npm run build -w @safewalk/contracts && npm run build -w @safewalk/api && npm run build:web -w @safewalk/mobile",
+    "package:valuehost": "npm run build && node scripts/package-valuehost.mjs",
+    "typecheck": "npm run build -w @safewalk/contracts && npm run typecheck --workspaces --if-present",
+    "lint": "eslint apps/api/src apps/admin/src packages/contracts/src && npm run lint -w @safewalk/mobile",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "npm run test -w @safewalk/api && npm run test -w @safewalk/admin && npm run test -w @safewalk/mobile",
+    "check": "npm run typecheck && npm run lint && npm run test && npm run format:check",
+    "db:setup": "node scripts/setup-local-db.mjs",
+    "db:migrate": "npm run db:migrate -w @safewalk/api"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.0",
+    "concurrently": "^9.2.1",
+    "eslint": "^9.39.0",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.6.2",
+    "typescript-eslint": "^8.46.2"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true,
+    "unrs-resolver@1.12.2": true
+  }
+}

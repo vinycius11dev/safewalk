@@ -1,0 +1,102 @@
+import { StyleSheet } from 'react-native';
+import { fonts, radii, spacing, type Colors } from '@/theme/tokens';
+import { createRouteStyles } from '@/features/routes/compare-routes.styles';
+
+export function createRealCompareStyles(colors: Colors) {
+  return {
+    ...createRouteStyles(colors),
+    ...StyleSheet.create({
+      map: { flex: 1 },
+      optionsRow: { minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+      detailsLink: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
+      optionsOverlay: {
+        flex: 1,
+        backgroundColor: colors.outer,
+        justifyContent: 'flex-end',
+        paddingTop: 24,
+      },
+      optionsSheet: {
+        maxHeight: '85%',
+        padding: spacing.lg,
+        gap: spacing.md,
+        borderTopLeftRadius: radii.lg,
+        borderTopRightRadius: radii.lg,
+        backgroundColor: colors.surface,
+      },
+      metricSummary: {
+        minHeight: 64,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: spacing.sm,
+        paddingHorizontal: spacing.md,
+        paddingVertical: spacing.sm,
+        borderRadius: radii.md,
+        backgroundColor: colors.raised,
+      },
+      time: { fontFamily: fonts.extrabold, fontSize: 26, lineHeight: 32, letterSpacing: -0.5 },
+      routeSummary: { gap: spacing.xs },
+      panel: {
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        height: 400,
+        maxHeight: '58%',
+        borderTopLeftRadius: radii.lg,
+        borderTopRightRadius: radii.lg,
+        backgroundColor: colors.surface,
+        overflow: 'hidden',
+      },
+      routeScroll: { flex: 1, minHeight: 0 },
+      panelContent: {
+        paddingHorizontal: spacing.lg,
+        paddingTop: spacing.sm,
+        paddingBottom: spacing.md,
+        gap: spacing.sm,
+      },
+      footer: {
+        flexShrink: 0,
+        paddingHorizontal: spacing.lg,
+        paddingTop: spacing.sm,
+        paddingBottom: spacing.lg,
+        gap: spacing.sm,
+        borderTopWidth: 1,
+        borderTopColor: colors.border,
+        backgroundColor: colors.surface,
+      },
+      addressButton: {
+        minHeight: 38,
+        backgroundColor: colors.raised,
+        borderRadius: radii.sm,
+        paddingHorizontal: spacing.md,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: spacing.sm,
+      },
+      addressGrow: { flex: 1 },
+      blocked: { flex: 1, padding: spacing.xl, gap: spacing.lg },
+      status: { gap: spacing.sm },
+      consentNotice: {
+        borderRadius: radii.md,
+        padding: spacing.md,
+        backgroundColor: colors.raised,
+        gap: spacing.sm,
+      },
+      compactButton: { minHeight: 44, justifyContent: 'center', paddingHorizontal: spacing.sm },
+      preferenceRow: { flexDirection: 'row', gap: spacing.sm, flexWrap: 'wrap' },
+      preferenceChip: {
+        flexGrow: 1,
+        alignItems: 'center',
+        paddingVertical: spacing.sm,
+        borderRadius: radii.md,
+        borderWidth: 1,
+        borderColor: colors.border,
+        backgroundColor: colors.surface,
+      },
+      preferenceChipSelected: {
+        borderColor: colors.primary,
+        backgroundColor: colors.selected,
+      },
+    }),
+  };
+}

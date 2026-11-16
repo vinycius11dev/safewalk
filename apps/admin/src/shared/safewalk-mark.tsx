@@ -1,0 +1,25 @@
+/** Símbolo da marca (docs/marca): caminho em S, anel de chegada e ponto âmbar de partida. */
+export function SafeWalkMark({ size = 36 }: { size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 1024 1024"
+      role="img"
+      aria-label="SafeWalk"
+      className="brand-mark"
+    >
+      <rect width="1024" height="1024" rx="230" fill="#0E1726" />
+      <g transform="translate(-60 -30)">
+        <path
+          d="M836 355H472a136 136 0 0 0 0 272H782a136 136 0 0 1 0 272H427"
+          fill="none"
+          stroke="#F5F3EC"
+          strokeWidth="66"
+        />
+        <circle cx="909" cy="355" r="74.5" fill="none" stroke="#F5F3EC" strokeWidth="41" />
+        <circle cx="345" cy="899" r="84" fill="#F2B45A" />
+      </g>
+    </svg>
+  );
+}

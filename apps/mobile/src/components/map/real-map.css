@@ -1,0 +1,191 @@
+.safewalk-real-map {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: var(--map-background);
+  color: var(--map-text);
+}
+.safewalk-real-map__canvas {
+  position: absolute;
+  inset: 0;
+}
+.safewalk-real-map__rain {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0.24;
+  background-image: repeating-linear-gradient(
+    108deg,
+    transparent 0 23px,
+    rgba(173, 211, 255, 0.46) 24px 25px,
+    transparent 26px 52px
+  );
+  background-size: 48px 56px;
+  animation: safewalk-map-rain 1100ms linear infinite;
+  mask-image: linear-gradient(180deg, transparent 0, #000 14%, #000 88%, transparent 100%);
+}
+.safewalk-real-map__rain-status {
+  position: absolute;
+  top: calc(var(--map-controls-top) + 8px);
+  left: 16px;
+  z-index: 2;
+  display: flex;
+  min-height: 32px;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px;
+  border: 1px solid rgba(122, 170, 255, 0.4);
+  border-radius: 999px;
+  background: rgba(12, 22, 37, 0.9);
+  color: #7aaaff;
+  font:
+    600 11px/15px Inter_600SemiBold,
+    sans-serif;
+  pointer-events: none;
+}
+.safewalk-real-map__rain-status svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+.safewalk-real-map__rain-status--dry,
+.safewalk-real-map__rain-status--unknown {
+  border-color: var(--map-border);
+  color: var(--map-muted);
+}
+.safewalk-real-map__rain-status--stale {
+  border-color: rgba(244, 189, 88, 0.58);
+  color: #f4bd58;
+}
+@keyframes safewalk-map-rain {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: -10px 56px;
+  }
+}
+.safewalk-real-map .maplibregl-canvas:focus-visible {
+  outline-offset: -3px;
+}
+.safewalk-real-map .maplibregl-ctrl-top-left {
+  top: var(--map-attribution-top);
+  left: 9px;
+}
+.safewalk-real-map .maplibregl-ctrl-attrib {
+  max-width: 290px;
+  background: var(--map-surface);
+  color: var(--map-muted);
+  border-radius: 8px;
+  font:
+    9px/15px Inter_400Regular,
+    sans-serif;
+}
+.safewalk-real-map .maplibregl-ctrl-attrib a {
+  color: var(--map-muted);
+}
+.safewalk-real-map .maplibregl-ctrl-attrib-button {
+  background-color: #eef2fa;
+  border-radius: 50%;
+}
+.safewalk-real-map .safewalk-map-preview {
+  pointer-events: none;
+}
+.safewalk-real-map .safewalk-map-preview .maplibregl-popup-content {
+  background: var(--map-surface);
+  color: var(--map-text);
+  border: 1px solid var(--map-border);
+  border-radius: 12px;
+  padding: 10px 12px;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  font:
+    12px/18px Inter_400Regular,
+    sans-serif;
+  box-shadow: 0 4px 16px #0005;
+}
+.safewalk-real-map .safewalk-map-preview .maplibregl-popup-tip {
+  border-top-color: var(--map-surface);
+  border-bottom-color: var(--map-surface);
+}
+.safewalk-real-map__controls {
+  position: absolute;
+  right: 16px;
+  top: var(--map-controls-top);
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.safewalk-real-map__button {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  min-height: 42px;
+  border-radius: 13px;
+  border: 1px solid var(--map-border);
+  background: var(--map-surface);
+  color: var(--map-text);
+  font:
+    600 12px Inter_600SemiBold,
+    sans-serif;
+  box-shadow: 0 3px 10px #0002;
+  cursor: pointer;
+}
+.safewalk-real-map__button[aria-pressed='true'] {
+  border-color: var(--map-primary);
+  color: var(--map-primary);
+}
+.safewalk-real-map__status {
+  position: absolute;
+  top: calc(var(--map-controls-top) + 8px);
+  left: 16px;
+  right: 70px;
+  padding: 12px;
+  border: 1px solid var(--map-border);
+  border-radius: 12px;
+  background: var(--map-surface);
+  color: var(--map-muted);
+  font:
+    12px/18px Inter_400Regular,
+    sans-serif;
+  z-index: 1;
+  pointer-events: none;
+}
+.safewalk-real-map__status--error {
+  pointer-events: auto;
+}
+.safewalk-real-map__retry {
+  display: block;
+  margin-top: 8px;
+  background: var(--map-primary);
+  color: white;
+  border: 0;
+  border-radius: 8px;
+  padding: 8px 10px;
+  cursor: pointer;
+  font: inherit;
+}
+.safewalk-real-map__status p {
+  margin: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .safewalk-real-map * {
+    scroll-behavior: auto;
+  }
+  .safewalk-real-map__rain {
+    animation: none;
+    opacity: 0.08;
+  }
+}
+@media (max-height: 760px) {
+  .safewalk-real-map__controls {
+    flex-direction: row;
+  }
+}

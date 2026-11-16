@@ -1,0 +1,47 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_type": "R",
+        "osm_id": 19749086,
+        "osm_key": "shop",
+        "osm_value": "mall",
+        "type": "house",
+        "housenumber": "569",
+        "name": "Shopping Frei Caneca",
+        "street": "Rua Frei Caneca",
+        "district": "Consolação",
+        "city": "São Paulo",
+        "state": "São Paulo",
+        "country": "Brasil",
+        "postcode": "01307-001",
+        "countrycode": "BR",
+        "extent": [-46.6530558, -23.5535778, -46.6519147, -23.5547534]
+      },
+      "geometry": { "type": "Point", "coordinates": [-46.6524036, -23.55418] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_type": "W",
+        "osm_id": 1215371208,
+        "osm_key": "shop",
+        "osm_value": "mall",
+        "type": "house",
+        "housenumber": "569",
+        "name": "Frei Caneca Shopping",
+        "street": "Rua Frei Caneca",
+        "district": "Consolação",
+        "city": "São Paulo",
+        "state": "São Paulo",
+        "country": "Brasil",
+        "postcode": "01307-001",
+        "countrycode": "BR",
+        "extent": [-46.6530738, -23.5533738, -46.6519055, -23.5547672]
+      },
+      "geometry": { "type": "Point", "coordinates": [-46.6524186, -23.5541778] }
+    }
+  ]
+}
