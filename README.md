@@ -1,6 +1,86 @@
 # SafeWalk
 
-Aplicativo Expo/React Native para pedestres de São Paulo, com API própria TypeScript e persistência MariaDB. A versão local mantém os 52 fluxos de referência e agora integra mapa vetorial real, busca de endereços, cálculo de rotas a pé, dados urbanos públicos e acompanhamento GPS sob autorização. Segurança e acessibilidade do percurso permanecem **não avaliadas**.
+Aplicativo Expo/React Native para quem caminha sozinho por São Paulo. Ele planeja a rota a pé com dados públicos da cidade, avisa contatos de confiança e tem SOS. Projeto da Global Solution FIAP 2026.2 (CitizenTech, Engenharia de Software, 3º ano).
+
+## Ficha da CitizenTech
+
+| Campo                      | Resposta                                                                                                                                                                                                                                                                                                                                                                                                           |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Nome**                   | SafeWalk                                                                                                                                                                                                                                                                                                                                                                                                           |
+| **Cidade e bairro**        | São Paulo (SP). Piloto: Bela Vista e entorno da Avenida Paulista, onde fica a FIAP Paulista.                                                                                                                                                                                                                                                                                                                       |
+| **Cidadão beneficiado**    | Quem anda a pé sozinho, principalmente à noite: estudantes saindo da faculdade, trabalhadores, idosos e pessoas com deficiência ou mobilidade reduzida.                                                                                                                                                                                                                                                            |
+| **Problema, em uma frase** | Quem volta a pé sozinho não sabe o que vai encontrar no caminho (rua escura, buraco, alagamento, calçada ruim) e, se algo acontecer, ninguém de confiança fica sabendo a tempo.                                                                                                                                                                                                                                    |
+| **Como funciona**          | A pessoa busca o destino, compara rotas a pé com os registros públicos do trajeto (iluminação, semáforos, calçadas, alagamentos, solicitações SP156, chuva), escolhe quem acompanha e inicia a caminhada. O contato recebe um link com o roteiro e a última posição. Se a pessoa não confirmar a chegada, o app pede um check-in e mostra o alerta a quem acompanha. Há SOS, PIN para encerrar e PIN de coação.    |
+| **O que cada parte faz**   | **App mobile** (`apps/mobile`): jornada do cidadão. **API** (`apps/api`): regras, autenticação, dados urbanos e alertas. **Banco MariaDB** (`database/migrations`): contas, contatos, trajetos, posições e relatos. **Painel da Prefeitura** (`apps/admin`): recebe os relatos de zeladoria que o cidadão escolhe enviar. **Contratos** (`packages/contracts`): validações compartilhadas entre app, API e painel. |
+| **Link do repositório**    | https://github.com/vinycius11dev/safewalk                                                                                                                                                                                                                                                                                                                                                                          |
+| **Indicador de impacto**   | Percentual de caminhadas encerradas com "Cheguei bem"; tempo entre um alerta (SOS, check-in perdido ou perda de sinal) e a visualização pelo contato; relatos de zeladoria enviados e resolvidos pela Prefeitura.                                                                                                                                                                                                  |
+| **ODS conectados**         | **ODS 11** (11.2 e 11.7): deslocamento a pé e espaços públicos mais seguros e acessíveis. **ODS 10** (10.2): perfil Idoso/PCD e rota para cadeirante, sem escadas. **ODS 3** (3.6): dados de sinistros e semáforos mostrados no percurso. **ODS 13** (13.1): alerta de chuva e áreas de alagamento conhecidas no trajeto.                                                                                          |
+
+**Integrantes**
+
+| Nome        | RM          |
+| ----------- | ----------- |
+| _preencher_ | _preencher_ |
+| _preencher_ | _preencher_ |
+| _preencher_ | _preencher_ |
+
+## Entrega de Mobile Development & IoT
+
+- **Vídeo (até 3 min):** _colar aqui o link do YouTube_. Roteiro sugerido em [docs/video-mobile.md](docs/video-mobile.md).
+- **App no ar:** https://safewalk.recapture.com.br/app (abre no navegador do celular).
+- **Apresentação:** https://safewalk.recapture.com.br/proposta/
+- **Painel da Prefeitura:** https://painel.safewalk.recapture.com.br
+
+### Jornada principal do cidadão
+
+1. Cria a conta e aceita as permissões. O GPS é opcional e só é ligado quando a pessoa toca no botão.
+2. Cadastra o PIN e o primeiro contato de confiança.
+3. Busca o destino (endereços reais de São Paulo) e compara as rotas a pé.
+4. Escolhe quem acompanha e inicia a caminhada. O contato recebe o link de acompanhamento.
+5. Durante o trajeto tem SOS (segurar 3 s), aviso de bloqueio e "Cheguei ao destino". Encerrar exige o PIN.
+6. A qualquer momento pode relatar um problema da rua (buraco, rua sem luz, alagamento…) e escolher enviá-lo ao painel da Prefeitura.
+
+### Telas
+
+|                                                Boas-vindas                                                 |                                             Cadastro                                              |                                                 Início com mapa                                                  |
+| :--------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------: |
+|         <img src="docs/prints/mobile/01-boas-vindas.png" width="230" alt="Tela de boas-vindas" />          |        <img src="docs/prints/mobile/02-cadastro.png" width="230" alt="Tela de cadastro" />        | <img src="docs/prints/mobile/03-inicio-mapa.png" width="230" alt="Início com mapa, camadas e ajuda por perto" /> |
+|                                            **Buscar endereço**                                             |                                        **Comparar rotas**                                         |                                              **Caminhada com SOS**                                               |
+| <img src="docs/prints/mobile/04-buscar-endereco.png" width="230" alt="Busca de endereço com resultados" /> | <img src="docs/prints/mobile/05-comparar-rotas.png" width="230" alt="Comparação de rotas a pé" /> |       <img src="docs/prints/mobile/06-trajeto-sos.png" width="230" alt="Caminhada em andamento com SOS" />       |
+|                                            **Relatar problema**                                            |                                     **Contatos de segurança**                                     |                                              **Perfil e segurança**                                              |
+|         <img src="docs/prints/mobile/07-relatar.png" width="230" alt="Relatar problema da rua" />          |     <img src="docs/prints/mobile/08-contatos.png" width="230" alt="Contatos de segurança" />      |    <img src="docs/prints/mobile/09-perfil-seguranca.png" width="230" alt="Perfil de caminhada e segurança" />    |
+
+Prints tirados do app web em tamanho de celular (390 × 844), com uma conta fictícia de teste.
+
+### Como cada critério é atendido
+
+| Critério                  | Onde está                                                                                                                                                                                                                                                                                         |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Telas e navegação**     | Expo Router com rotas em arquivo (`apps/mobile/src/app`): abas Início, Rotas, Relatar, Contatos e Segurança, telas empilhadas e rotas dinâmicas como `trajeto/[id]` e `acompanhar/[token]`. Telas, hooks e serviços ficam separados por funcionalidade em `apps/mobile/src/features`.             |
+| **Consumo de dados**      | API REST própria com TanStack Query (cache, carregamento e erro em todas as telas). A API busca endereços (Photon), rotas a pé (Valhalla), mapa (OpenFreeMap), camadas do GeoSampa, solicitações SP156, chuva (Open-Meteo) e CGE. As respostas são validadas com zod (`packages/contracts`).      |
+| **Banco de dados**        | MariaDB acessado pela API, com 24 migrações versionadas em `database/migrations`: contas, PIN (hash), contatos, trajetos, posições, relatos com foto, locais salvos e preferências. No aparelho, a sessão fica no `expo-secure-store` (armazenamento criptografado do sistema).                   |
+| **Acessibilidade**        | Rótulos, papéis e estados para leitor de tela (`accessibilityLabel`/`Role`/`State`) em todos os controles; avisos com `accessibilityLiveRegion`; tema claro e escuro; respeito a "reduzir movimento"; botões grandes; textos simples. Perfil Idoso/PCD e rota para cadeirante, que evita escadas. |
+| **Aderência ao problema** | Toda a jornada sai do problema da Ficha: rota a pé com os registros públicos do trajeto, acompanhamento por contato de confiança, SOS e relato de zeladoria para a Prefeitura. Dados pessoais reais não são usados; os testes usam contas fictícias.                                              |
+| **Documentação**          | Este README (Ficha, prints, instruções), [arquitetura](docs/architecture.md), [cobertura de telas](docs/screen-coverage.md), [fontes de dados](docs/urban-data.md) e [prompts de IA](prompts.md).                                                                                                 |
+
+### Rodar o app
+
+O jeito mais rápido de ver o app é abrir https://safewalk.recapture.com.br/app no celular. Para rodar no computador:
+
+```powershell
+npm install
+npm run db:setup     # cria o banco e o usuário local (MariaDB na porta 3307)
+npm run db:migrate
+npm run dev          # API em http://localhost:4010 e app em http://localhost:8081
+```
+
+Para abrir no celular pelo Expo, ponha o IP do computador em `apps/mobile/.env` (`EXPO_PUBLIC_API_URL=http://<ip>:4010`) e rode `npm run dev:mobile`. O mapa nativo usa MapLibre, que não vem no Expo Go: para ver o mapa no aparelho é preciso um development build (`npx expo run:android`). No Expo Go as demais telas funcionam e o mapa mostra esse aviso.
+
+**Explorar demonstração**, na tela de boas-vindas, abre um passo a passo do app que separa o que funciona do que é simulado.
+
+## Documentação técnica
+
+A versão local mantém os 52 fluxos de referência e integra mapa vetorial real, busca de endereços, cálculo de rotas a pé, dados urbanos públicos e acompanhamento GPS sob autorização. Segurança e acessibilidade do percurso permanecem **não avaliadas**: o app mostra o que já foi registrado, sem certificar que um caminho é seguro.
 
 ## Rodar localmente
 
