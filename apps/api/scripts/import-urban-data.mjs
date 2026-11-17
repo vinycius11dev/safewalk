@@ -6,14 +6,23 @@ import mysql from 'mysql2/promise';
 
 /**
  * Importa o arquivo gerado por scripts/export-urban-data.mjs no banco configurado no `.env` da API
- * (rodar na pasta da API). Só mexe em `urban_imports` e `urban_import_features`: cada importação
- * do arquivo substitui a de mesmo id, numa transação; outras tabelas não são tocadas.
+ * (rodar na pasta da API). Só mexe em `urban_imports` e nas tabelas ligadas a cada importação
+ * (`urban_import_features`, `crime_points`, `infosiga_municipalities`): cada importação do arquivo
+ * substitui a de mesmo id, numa transação; para SSP e Infosiga, o lote anterior da fonte também sai.
+ * Contas, trajetos e relatos não são tocados.
  *   node scripts/import-urban-data.mjs urban-data.ndjson.gz
  */
 dotenv.config({ quiet: true });
 const file = process.argv[2];
 if (!file) throw new Error('Informe o arquivo .ndjson.gz.');
-const ALLOWED = new Set(['urban_imports', 'urban_import_features']);
+const ALLOWED = new Set([
+  'urban_imports',
+  'urban_import_features',
+  'crime_points',
+  'infosiga_municipalities',
+]);
+// Fontes com um único lote vigente (os importadores originais apagam o lote anterior da mesma fonte).
+const SINGLE_LOT_SOURCES = new Set(['ssp-crimes', 'infosiga']);
 const BATCH = 500;
 
 /** Datas voltam a ser Date; colunas JSON (que o driver lê como objeto) voltam a ser texto JSON. */
@@ -63,6 +72,11 @@ try {
     if (table === 'urban_imports') {
       // Substitui a importação de mesmo id (as feições saem junto, por ON DELETE CASCADE).
       await connection.query('DELETE FROM urban_imports WHERE id = ?', [decoded.id]);
+      if (SINGLE_LOT_SOURCES.has(decoded.source_id))
+        await connection.query('DELETE FROM urban_imports WHERE source_id = ? AND id <> ?', [
+          decoded.source_id,
+          decoded.id,
+        ]);
     } else await flush('urban_imports');
     const rows = pending.get(table) ?? [];
     rows.push(decoded);
@@ -70,7 +84,7 @@ try {
     if (rows.length >= BATCH) await flush(table);
   }
   await flush('urban_imports');
-  await flush('urban_import_features');
+  for (const table of ALLOWED) await flush(table);
   await connection.commit();
   console.info(`Importação concluída: ${inserted} linhas.`);
 } catch (error) {

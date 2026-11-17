@@ -31,7 +31,7 @@ Nenhuma senha, chave ou acesso do servidor fica no GitHub: colaboradores só mex
 1. Local: builds (`npm run build`, web com `EXPO_PUBLIC_API_URL=https://api.safewalk.recapture.com.br`, painel com `VITE_API_URL` igual) e `npm run package:valuehost`.
 2. Servidor: extrair `safewalk-backend.tar.gz` em `~/safewalk` (preserva o `.env`), web e painel nos `public_html`.
 3. No terminal da conta: `source ~/nodevenv/safewalk/apps/api/22/bin/activate && cd ~/safewalk/apps/api && npm install --omit=dev && npm run migrate`, depois `touch tmp/restart.txt`.
-4. Dados urbanos: `node scripts/export-urban-data.mjs` local e `npm run import:urban -- <arquivo>` no servidor (substitui só as importações de mesmo id).
+4. Dados urbanos: `node scripts/export-urban-data.mjs` local e `npm run import:urban -- <arquivo>` no servidor (substitui só as importações de mesmo id). O arquivo leva também os boletins da SSP (`crime_points`) e os municípios do Infosiga; para mandar só essas duas bases, use `node scripts/export-urban-data.mjs work/safewalk-dados-ssp-infosiga.ndjson.gz --sources ssp-crimes,infosiga`. Para SSP e Infosiga a importação no servidor apaga o lote anterior da mesma fonte, como os importadores originais. Assim o servidor não precisa de Python nem das planilhas.
 5. Operadores do painel: `npm run admin:create -- <email> "<nome>" operator`, digitado pelo próprio operador no terminal do servidor.
 
 O `.tgz` dos contratos leva o hash do conteúdo no nome; sem isso o npm do servidor reaproveita a versão antiga do cache (mesmo nome e versão) e a API não sobe. O pacote referencia os contratos por caminho absoluto (`SAFEWALK_SERVER_API_DIR`, padrão `/home/safewalk/safewalk/apps/api`), porque o npm do nodevenv resolve `file:` relativo à pasta do nodevenv.
