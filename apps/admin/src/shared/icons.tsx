@@ -13,7 +13,22 @@ export type IconName =
   | 'history'
   | 'arrow-left'
   | 'alert'
-  | 'check';
+  | 'check'
+  | 'search'
+  | 'close'
+  | 'chevron-right'
+  | 'download'
+  | 'pin'
+  | 'clock'
+  | 'stack'
+  | 'camera'
+  | 'flag'
+  | 'gauge'
+  | 'info'
+  | 'external'
+  | 'archive'
+  | 'logout'
+  | 'tick';
 
 /** Ícones de traço 24x24 do painel; a cor vem de `currentColor`. */
 const paths: Record<IconName, ReactNode> = {
@@ -94,6 +109,78 @@ const paths: Record<IconName, ReactNode> = {
       <path d="m8.2 12.2 2.6 2.6 5-5.6" />
     </>
   ),
+  search: (
+    <>
+      <circle cx="11" cy="11" r="6.5" />
+      <path d="m16 16 4.5 4.5" />
+    </>
+  ),
+  close: <path d="M6 6l12 12M18 6 6 18" />,
+  'chevron-right': <path d="m9.5 5.5 6.5 6.5-6.5 6.5" />,
+  download: (
+    <>
+      <path d="M12 4v11M7.5 10.5 12 15l4.5-4.5" />
+      <path d="M5 19.5h14" />
+    </>
+  ),
+  pin: (
+    <>
+      <path d="M12 21s6.5-6 6.5-11a6.5 6.5 0 0 0-13 0c0 5 6.5 11 6.5 11z" />
+      <circle cx="12" cy="10" r="2.3" />
+    </>
+  ),
+  clock: (
+    <>
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="M12 7.5V12l3 2" />
+    </>
+  ),
+  stack: (
+    <>
+      <path d="m12 4 8.5 4.5L12 13 3.5 8.5z" />
+      <path d="m3.5 12.5 8.5 4.5 8.5-4.5M3.5 16.5 12 21l8.5-4.5" />
+    </>
+  ),
+  camera: (
+    <>
+      <path d="M4.5 8h3l1.5-2.5h6L16.5 8h3A1.5 1.5 0 0 1 21 9.5v8a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 17.5v-8A1.5 1.5 0 0 1 4.5 8z" />
+      <circle cx="12" cy="13.3" r="3.2" />
+    </>
+  ),
+  flag: <path d="M5.5 21V4.5h11l-2 4 2 4h-11" />,
+  gauge: (
+    <>
+      <rect x="3.5" y="3.5" width="7" height="9" rx="1.5" />
+      <rect x="13.5" y="3.5" width="7" height="5" rx="1.5" />
+      <rect x="13.5" y="11.5" width="7" height="9" rx="1.5" />
+      <rect x="3.5" y="15.5" width="7" height="5" rx="1.5" />
+    </>
+  ),
+  info: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 11v5.2M12 7.6v.2" />
+    </>
+  ),
+  external: (
+    <>
+      <path d="M13.5 5H19v5.5M19 5l-8 8" />
+      <path d="M17 14.5V18a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 5 18V9a1.5 1.5 0 0 1 1.5-1.5H10" />
+    </>
+  ),
+  archive: (
+    <>
+      <rect x="3.5" y="4.5" width="17" height="4.5" rx="1.2" />
+      <path d="M5.5 9v9A1.5 1.5 0 0 0 7 19.5h10a1.5 1.5 0 0 0 1.5-1.5V9M10 13h4" />
+    </>
+  ),
+  logout: (
+    <>
+      <path d="M14 4.5h3.5A1.5 1.5 0 0 1 19 6v12a1.5 1.5 0 0 1-1.5 1.5H14" />
+      <path d="M4.5 12H14M10 8l4 4-4 4" />
+    </>
+  ),
+  tick: <path d="m5.5 12.5 4.2 4.2 8.8-9.4" />,
 };
 
 export function Icon({ name, className }: { name: IconName; className?: string }) {

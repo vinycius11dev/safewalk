@@ -1,63 +1,85 @@
-/* Cores do SafeWalk (mesmas do app) em variáveis; claro e escuro usam os mesmos componentes. */
+/*
+ * Cores do SafeWalk (mesmas do app) em variáveis. O painel é uma sala de situação: sempre
+ * escuro, com o mapa ao fundo e os painéis flutuando sobre ele.
+ */
 :root {
-  color-scheme: light dark;
-  --bg: #eef2f8;
-  --surface: #ffffff;
-  --raised: #eaf0fa;
-  --border: #d9e2ef;
-  --text: #15233a;
-  --muted: #5a6a82;
-  --primary: #2f6fec;
-  --primary-text: #235ccc;
-  --success: #007a5c;
-  --warning: #8f5a00;
-  --danger: #c42f3b;
-  --selected: #e8f0ff;
+  color-scheme: dark;
+
+  /* Marca */
   --night: #0e1726;
   --cream: #f5f3ec;
   --amber: #f2b45a;
+  --blue: #2f6feb;
+  --mist: #b0bdce;
   --white: #ffffff;
-  --shadow: 0 1px 2px rgb(14 23 38 / 8%), 0 10px 28px rgb(14 23 38 / 7%);
-  --radius: 14px;
+
+  /* Superfícies */
+  --bg: #0a111d;
+  --surface: #121d2f;
+  --raised: #1a2840;
+  --glass: rgb(13 21 35 / 78%);
+  --glass-strong: rgb(13 21 35 / 92%);
+  --wash: rgb(245 243 236 / 5%);
+  --wash-strong: rgb(245 243 236 / 9%);
+  --border: rgb(245 243 236 / 11%);
+  --border-strong: rgb(245 243 236 / 22%);
+  --selected: rgb(47 111 235 / 20%);
+  --blur: blur(22px) saturate(150%);
+
+  /* Texto */
+  --text: #f5f3ec;
+  --muted: #b0bdce;
+  --faint: #8a99ae;
+  --primary: #2f6feb;
+  --primary-hover: #4380f2;
+  --primary-text: #8db4ff;
+  --success: #54d7b0;
+  --warning: #f2b45a;
+  --danger: #ff7a7a;
+
+  /* Forma, sombra e foco */
+  --radius: 16px;
   --radius-sm: 10px;
-  --focus: 0 0 0 3px rgb(47 111 236 / 45%);
+  --radius-xs: 6px;
+  --shadow: 0 28px 64px -18px rgb(0 0 0 / 70%);
+  --focus: 0 0 0 2px var(--night), 0 0 0 4px #8db4ff;
+  --font: Inter, 'Public Sans', 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  /* Espaços e medidas da sala */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --gutter: 12px;
+  --topbar-h: 58px;
+  --rail-w: 412px;
+  --drawer-w: 444px;
 
   /* Andamento do relato */
-  --status-received: #235ccc;
-  --status-analyzing: #8f5a00;
-  --status-dispatched: #6d28d9;
-  --status-resolved: #007a5c;
-  --status-dismissed: #5a6a82;
+  --status-received: #7aaaff;
+  --status-analyzing: #f4bd58;
+  --status-dispatched: #c4a8ff;
+  --status-resolved: #54d7b0;
+  --status-dismissed: #9aa8bc;
 
-  /* Pino de cada tipo no mapa: mesmos fundos saturados do app, símbolo branco */
+  /* Prioridade sugerida */
+  --priority-high: #ff7a7a;
+  --priority-medium: #f2b45a;
+  --priority-normal: #56657c;
+
+  /*
+   * Cor de cada tipo no mapa e nos gráficos: símbolo branco por cima e leitura sobre fundo
+   * escuro. A cor nunca vai sozinha, sempre com o símbolo e o nome do tipo.
+   */
   --type-pothole: #ea580c;
-  --type-traffic_light: #1f2937;
-  --type-flood: #0369a1;
-  --type-lighting: #8a5a00;
-  --type-sidewalk: #be185d;
-  --type-construction: #c2410c;
-  --type-obstruction: #0d9488;
-  --type-other: #526077;
-}
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0c1625;
-    --surface: #19263a;
-    --raised: #243550;
-    --border: #354862;
-    --text: #f2f1e9;
-    --muted: #b0bdce;
-    --primary: #2f6fec;
-    --primary-text: #7aaaff;
-    --success: #54d7b0;
-    --warning: #f4bd58;
-    --danger: #ff6b6b;
-    --selected: #264a59;
-    --shadow: 0 1px 2px rgb(0 0 0 / 40%), 0 10px 28px rgb(0 0 0 / 30%);
-    --status-received: #7aaaff;
-    --status-analyzing: #f4bd58;
-    --status-dispatched: #c4a8ff;
-    --status-resolved: #54d7b0;
-    --status-dismissed: #b0bdce;
-  }
+  --type-traffic_light: #4f6bed;
+  --type-flood: #0e9ac4;
+  --type-lighting: #b88a00;
+  --type-sidewalk: #d6409f;
+  --type-construction: #9d4edd;
+  --type-obstruction: #12996b;
+  --type-other: #5f6f88;
 }

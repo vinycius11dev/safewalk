@@ -3,96 +3,156 @@
   display: grid;
   place-items: center;
 }
+
+/*
+ * A sala de situação: a barra do topo flutua sobre o conteúdo (o mapa aparece desfocado por
+ * trás) e `--top-inset` avisa às telas quanto espaço ela ocupa.
+ */
 .shell {
+  --top-inset: var(--topbar-h);
+  position: relative;
   height: 100%;
   display: flex;
   flex-direction: column;
+  font-family: var(--font);
+  font-size: 14px;
+  background:
+    radial-gradient(120% 80% at 80% -10%, rgb(47 111 235 / 12%), transparent 60%), var(--bg);
+}
+.shell .icon {
+  width: 16px;
+  height: 16px;
+  flex: none;
 }
 .topbar {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 30;
+  height: var(--topbar-h);
   display: flex;
   align-items: center;
-  gap: 20px;
-  padding: 0 20px;
-  min-height: 60px;
-  background: var(--night);
-  color: var(--cream);
-  flex: none;
+  gap: var(--space-5);
+  padding: 0 var(--space-4);
+  background: rgb(10 17 29 / 72%);
+  border-bottom: 1px solid var(--border);
+  -webkit-backdrop-filter: var(--blur);
+  backdrop-filter: var(--blur);
 }
 .topbar-brand {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
+  flex: none;
+}
+.topbar-brand .brand-mark {
+  border-radius: 9px;
+  box-shadow: 0 0 0 1px var(--border-strong);
 }
 .topbar-brand > div {
   display: grid;
-  line-height: 1.15;
+  line-height: 1.2;
 }
 .topbar-brand strong {
-  font-size: 16px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }
 .topbar-brand div span {
   font-size: 12px;
-  color: rgb(245 243 236 / 70%);
-}
-.demo-tag {
-  padding: 3px 10px;
-  border-radius: 99px;
-  border: 1px solid var(--amber);
-  color: var(--amber);
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  color: var(--muted);
 }
 .topbar-nav {
   display: flex;
-  gap: 4px;
-  margin-left: 12px;
-  align-self: stretch;
+  gap: 2px;
+  flex: none;
+  padding: 3px;
+  border-radius: 99px;
+  background: var(--wash);
+  border: 1px solid var(--border);
 }
 .topbar-nav button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 32px;
+  padding: 0 14px;
   border: 0;
+  border-radius: 99px;
   background: transparent;
-  color: rgb(245 243 236 / 75%);
-  padding: 0 16px;
+  color: var(--muted);
+  font-size: 13.5px;
   font-weight: 600;
-  border-bottom: 3px solid transparent;
+  white-space: nowrap;
+  transition:
+    background 0.18s ease,
+    color 0.18s ease;
 }
 .topbar-nav button:hover {
-  color: var(--cream);
+  color: var(--text);
 }
 .topbar-nav button[aria-current='page'] {
-  color: var(--cream);
-  border-bottom-color: var(--amber);
+  background: var(--cream);
+  color: var(--night);
+}
+
+/* Aviso de demonstração: sempre à vista, em uma nota curta em vez de uma faixa. */
+.demo-note {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  max-width: 640px;
+  margin-inline: auto;
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: var(--muted);
+}
+.demo-note .icon {
+  margin-top: 1px;
+  color: var(--amber);
+}
+.demo-note strong {
+  color: var(--amber);
+  font-weight: 600;
 }
 .topbar-user {
-  margin-left: auto;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
+  flex: none;
+}
+.topbar-avatar {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--wash-strong);
+  border: 1px solid var(--border-strong);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
 }
 .topbar-user > div {
   display: grid;
-  text-align: right;
   line-height: 1.2;
 }
-.topbar-user span {
+.topbar-user strong {
+  font-size: 13px;
+  font-weight: 600;
+}
+.topbar-user div span {
   font-size: 12px;
-  color: rgb(245 243 236 / 70%);
+  color: var(--muted);
 }
 .topbar-exit {
-  color: var(--amber);
+  min-height: 32px;
+  padding: 0 10px;
+  font-size: 13px;
 }
 .topbar-exit:hover:not(:disabled) {
-  background: rgb(245 243 236 / 10%);
-}
-.disclaimer {
-  flex: none;
-  padding: 8px 20px;
-  font-size: 12.5px;
-  color: var(--warning);
-  background: color-mix(in srgb, var(--amber) 22%, var(--surface));
-  border-bottom: 1px solid var(--border);
+  background: var(--wash-strong);
 }
 .shell-main {
   flex: 1;
@@ -100,21 +160,52 @@
   display: flex;
   flex-direction: column;
 }
-@media (max-width: 760px) {
+
+/* Telas médias: a barra deixa de flutuar e a nota ganha uma linha só dela. */
+@media (max-width: 1280px) {
+  .shell {
+    --top-inset: 0px;
+  }
   .topbar {
+    position: static;
+    height: auto;
+    flex: none;
     flex-wrap: wrap;
-    gap: 6px 12px;
-    padding: 8px 14px;
+    gap: var(--space-2) var(--space-4);
+    padding: var(--space-2) var(--space-4);
+    background: var(--bg);
+  }
+  .topbar-user {
+    margin-left: auto;
+  }
+  .demo-note {
+    order: 4;
+    flex: 0 0 100%;
+    max-width: none;
+    margin: 0;
+    padding-top: var(--space-2);
+    border-top: 1px solid var(--border);
+  }
+}
+@media (max-width: 640px) {
+  .topbar {
+    padding: var(--space-2) var(--space-3);
+  }
+  .topbar-brand div span,
+  .topbar-user > div,
+  .topbar-avatar {
+    display: none;
   }
   .topbar-nav {
     order: 3;
-    width: 100%;
-    margin: 0;
+    flex: 0 0 100%;
   }
   .topbar-nav button {
-    padding: 10px 14px;
+    flex: 1;
+    justify-content: center;
+    min-height: 38px;
   }
-  .topbar-brand div span:not(.demo-tag) {
-    display: none;
+  .topbar-exit {
+    min-height: 38px;
   }
 }

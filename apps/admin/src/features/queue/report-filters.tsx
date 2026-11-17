@@ -1,5 +1,6 @@
 import { governmentReportTypes, reportLabels } from '@safewalk/contracts';
 import type { AdminReportListQuery } from '@safewalk/contracts';
+import { Icon } from '../../shared/icons';
 
 const statusOptions: { value: AdminReportListQuery['status']; label: string }[] = [
   { value: 'open', label: 'Em aberto' },
@@ -23,21 +24,10 @@ type Props = {
 export function ReportFilters({ status, type, search, onStatus, onType, onSearch }: Props) {
   return (
     <div className="filters">
-      <div className="filter-tabs" role="group" aria-label="Andamento">
-        {statusOptions.map((option) => (
-          <button
-            key={option.value}
-            type="button"
-            aria-pressed={status === option.value}
-            onClick={() => onStatus(option.value)}
-          >
-            {option.label}
-          </button>
-        ))}
-      </div>
       <div className="filter-row">
-        <label className="field">
+        <label className="filter-search">
           <span className="sr-only">Buscar por endereço ou descrição</span>
+          <Icon name="search" />
           <input
             className="input"
             type="search"
@@ -47,7 +37,7 @@ export function ReportFilters({ status, type, search, onStatus, onType, onSearch
             onChange={(event) => onSearch(event.target.value)}
           />
         </label>
-        <label className="field">
+        <label className="filter-type">
           <span className="sr-only">Tipo de relato</span>
           <select
             className="input"
@@ -65,6 +55,18 @@ export function ReportFilters({ status, type, search, onStatus, onType, onSearch
             ))}
           </select>
         </label>
+      </div>
+      <div className="filter-tabs" role="group" aria-label="Andamento">
+        {statusOptions.map((option) => (
+          <button
+            key={option.value}
+            type="button"
+            aria-pressed={status === option.value}
+            onClick={() => onStatus(option.value)}
+          >
+            {option.label}
+          </button>
+        ))}
       </div>
     </div>
   );

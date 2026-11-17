@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import { governmentStatusLabels, reportLabels } from '@safewalk/contracts';
 import type { AdminSummary, GovernmentStatus } from '@safewalk/contracts';
+import { TypeBadge } from '../../shared/report-types';
 
 const statuses: GovernmentStatus[] = [
   'received',
@@ -9,38 +11,88 @@ const statuses: GovernmentStatus[] = [
   'dismissed',
 ];
 
-/** Barra única com a proporção de cada andamento; cor e texto repetem a mesma informação. */
-export function StatusBar({ counts }: { counts: AdminSummary['counts'] }) {
+const SIZE = 184;
+const RADIUS = 72;
+/** Folga entre fatias, em radianos (cerca de 3 px no raio do anel). */
+const GAP = 3 / RADIUS;
+const TURN = Math.PI * 2;
+
+/** Arco do anel entre dois ângulos, medidos a partir do topo, no sentido horário. */
+function arcPath(from: number, to: number): string {
+  const at = (angle: number) =>
+    `${SIZE / 2 + RADIUS * Math.sin(angle)},${SIZE / 2 - RADIUS * Math.cos(angle)}`;
+  return `M${at(from)}A${RADIUS},${RADIUS} 0 ${to - from > Math.PI ? 1 : 0} 1 ${at(to)}`;
+}
+
+/**
+ * Anel com a proporção de cada andamento. A lista ao lado repete nome, quantidade e parcela,
+ * então a cor nunca é a única pista; passar o cursor destaca uma fatia.
+ */
+export function StatusDonut({ counts }: { counts: AdminSummary['counts'] }) {
+  const [active, setActive] = useState<GovernmentStatus | null>(null);
   const total = statuses.reduce((sum, status) => sum + counts[status], 0);
-  const width = 600;
-  let offset = 0;
+  const present = statuses.filter((status) => counts[status] > 0);
+  let cursor = 0;
+  const slices = present.map((status) => {
+    const sweep = (counts[status] / total) * TURN;
+    const slice = { status, from: cursor, to: cursor + sweep };
+    cursor += sweep;
+    return slice;
+  });
+  const share = (status: GovernmentStatus) =>
+    total === 0 ? '0%' : `${Math.round((counts[status] / total) * 100)}%`;
+
   return (
-    <div className="status-bar">
-      <svg viewBox={`0 0 ${width} 18`} role="img" aria-label="Proporção de relatos por andamento">
-        <rect x="0" y="0" width={width} height="18" rx="9" className="bar-track" />
-        {total > 0 &&
-          statuses.map((status) => {
-            const part = (counts[status] / total) * width;
-            const x = offset;
-            offset += part;
-            return part > 0 ? (
-              <rect
-                key={status}
-                x={x}
-                y="0"
-                width={part}
-                height="18"
-                className={`fill-${status}`}
-              />
-            ) : null;
-          })}
+    <div className="donut" data-active={active ?? undefined}>
+      <svg
+        className="donut-ring"
+        width={SIZE}
+        height={SIZE}
+        viewBox={`0 0 ${SIZE} ${SIZE}`}
+        role="img"
+        aria-label={`Relatos por andamento: ${statuses
+          .map((status) => `${governmentStatusLabels[status]} ${counts[status]}`)
+          .join(', ')}`}
+      >
+        <circle cx={SIZE / 2} cy={SIZE / 2} r={RADIUS} className="donut-track" />
+        {slices.length === 1 && slices[0] ? (
+          <circle
+            cx={SIZE / 2}
+            cy={SIZE / 2}
+            r={RADIUS}
+            className={`donut-slice stroke-${slices[0].status}`}
+          />
+        ) : (
+          slices.map(({ status, from, to }) => (
+            <path
+              key={status}
+              d={arcPath(from + GAP / 2, Math.max(from + GAP / 2 + 0.001, to - GAP / 2))}
+              className={`donut-slice stroke-${status}`}
+              data-dim={active !== null && active !== status ? 'true' : undefined}
+              onPointerEnter={() => setActive(status)}
+              onPointerLeave={() => setActive(null)}
+            />
+          ))
+        )}
+        <text x={SIZE / 2} y={SIZE / 2 + 4} textAnchor="middle" className="donut-total">
+          {(active ? counts[active] : total).toLocaleString('pt-BR')}
+        </text>
+        <text x={SIZE / 2} y={SIZE / 2 + 24} textAnchor="middle" className="donut-caption">
+          {active ? governmentStatusLabels[active].toLowerCase() : 'relatos no total'}
+        </text>
       </svg>
-      <ul className="legend">
+      <ul className="donut-legend">
         {statuses.map((status) => (
-          <li key={status}>
+          <li
+            key={status}
+            data-dim={active !== null && active !== status ? 'true' : undefined}
+            onPointerEnter={() => setActive(status)}
+            onPointerLeave={() => setActive(null)}
+          >
             <span className={`swatch fill-bg-${status}`} aria-hidden="true" />
-            {governmentStatusLabels[status]}
-            <strong>{counts[status].toLocaleString('pt-BR')}</strong>
+            <span className="donut-legend-label">{governmentStatusLabels[status]}</span>
+            <strong className="num">{counts[status].toLocaleString('pt-BR')}</strong>
+            <span className="donut-legend-share num">{share(status)}</span>
           </li>
         ))}
       </ul>
@@ -48,43 +100,29 @@ export function StatusBar({ counts }: { counts: AdminSummary['counts'] }) {
   );
 }
 
-const ROW = 34;
-const LABEL_WIDTH = 170;
-const BAR_WIDTH = 360;
-
-/** Barras horizontais com o valor escrito na ponta. */
+/** Barras horizontais na cor de cada tipo, com o símbolo, o nome e o valor escritos. */
 export function TypeBars({ rows }: { rows: AdminSummary['openByType'] }) {
   const max = Math.max(...rows.map((row) => row.count));
-  const height = rows.length * ROW;
   return (
-    <svg
-      className="type-bars"
-      viewBox={`0 0 ${LABEL_WIDTH + BAR_WIDTH + 50} ${height}`}
-      role="img"
-      aria-label={`Relatos em aberto por tipo: ${rows.map((row) => `${reportLabels[row.type]} ${row.count}`).join(', ')}`}
-    >
-      {rows.map((row, index) => {
-        const y = index * ROW;
-        const length = Math.max(4, (row.count / max) * BAR_WIDTH);
-        return (
-          <g key={row.type}>
-            <text x="0" y={y + 21} className="chart-label">
-              {reportLabels[row.type]}
-            </text>
+    <ol className="type-bars">
+      {rows.map((row) => (
+        <li key={row.type} className={`type-bar type-${row.type}`}>
+          <TypeBadge type={row.type} />
+          <span className="type-bar-label">{reportLabels[row.type]}</span>
+          <svg className="type-bar-track" height="12" aria-hidden="true">
+            <rect width="100%" height="12" rx="4" className="bar-track" />
+            {/* Ponta arredondada no valor; a base, à esquerda, fica reta. */}
+            <rect width="6" height="12" className="type-bar-fill" />
             <rect
-              x={LABEL_WIDTH}
-              y={y + 6}
-              width={length}
-              height="20"
-              rx="5"
-              className={`fill-type-${row.type}`}
+              width={`${Math.max(2, (row.count / max) * 100)}%`}
+              height="12"
+              rx="4"
+              className="type-bar-fill"
             />
-            <text x={LABEL_WIDTH + length + 8} y={y + 21} className="chart-value">
-              {row.count}
-            </text>
-          </g>
-        );
-      })}
-    </svg>
+          </svg>
+          <strong className="num">{row.count.toLocaleString('pt-BR')}</strong>
+        </li>
+      ))}
+    </ol>
   );
 }

@@ -41,3 +41,11 @@ export function formatDay(day: string): string {
   const [, month, date] = day.split('-');
   return `${date}/${month}`;
 }
+
+/** "agora", "há 4 s", "há 2 min": quanto tempo passou desde a última atualização da fila. */
+export function formatSince(elapsedMs: number): string {
+  const seconds = Math.max(0, Math.floor(elapsedMs / 1000));
+  if (seconds < 1) return 'agora';
+  if (seconds < 60) return `há ${seconds} s`;
+  return `há ${Math.floor(seconds / 60)} min`;
+}

@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { AdminReportListQuery, GovernmentStatus } from '@safewalk/contracts';
 import { adminApi } from './admin-client';
 
 /** A fila se atualiza sozinha: quem trabalha nela vê o que chegou sem recarregar. */
-const REFRESH_MS = 30_000;
+export const QUEUE_REFRESH_MS = 5_000;
+/** Indicadores e detalhe mudam menos; também são refeitos quando a fila recebe um relato. */
+const REFRESH_MS = 15_000;
 
 export const useSummary = () =>
   useQuery({
@@ -17,7 +19,7 @@ export const useReports = (query: AdminReportListQuery) =>
   useQuery({
     queryKey: ['reports', query],
     queryFn: () => adminApi.reports(query),
-    refetchInterval: REFRESH_MS,
+    refetchInterval: QUEUE_REFRESH_MS,
     placeholderData: keepPreviousData,
   });
 
@@ -61,4 +63,10 @@ export function useChangeStatus(id: string) {
       void client.invalidateQueries({ queryKey: ['summary'] });
     },
   });
+}
+
+/** Refaz os indicadores na hora, sem esperar o próximo ciclo (ex.: chegou um relato novo). */
+export function useRefreshSummary(): () => void {
+  const client = useQueryClient();
+  return useCallback(() => void client.invalidateQueries({ queryKey: ['summary'] }), [client]);
 }
