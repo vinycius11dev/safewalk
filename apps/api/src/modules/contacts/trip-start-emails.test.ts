@@ -145,14 +145,20 @@ test('servidor de e-mail lento não segura o início do trajeto: o contato apare
   const late: unknown[] = [];
   let release: () => void = () => undefined;
   const slow = () => new Promise<void>((resolve) => (release = resolve));
-  const result = await dispatchTripStartEmails(
-    [contactId],
-    [{ contactId, url: `${env.PUBLIC_WEB_URL}/acompanhar/x`, expiresAt: new Date().toISOString() }],
-    [{ id: contactId, email: 'mae@exemplo.com', accepted: true, emailTripAlerts: true }],
-    { configured: true, sendEmail: slow, waitMs: 20, onLateResult: (r) => late.push(r) },
-  );
-  assert.deepEqual(result, [{ contactId, status: 'sending' }]);
-  release();
-  await new Promise((resolve) => setTimeout(resolve, 10));
-  assert.deepEqual(late, [{ contactId, status: 'accepted_by_relay' }]);
+  const previousUrl = env.PUBLIC_WEB_URL;
+  env.PUBLIC_WEB_URL = urlBase;
+  try {
+    const result = await dispatchTripStartEmails(
+      [contactId],
+      [{ contactId, url: `${urlBase}/acompanhar/x`, expiresAt: new Date().toISOString() }],
+      [{ id: contactId, email: 'mae@exemplo.com', accepted: true, emailTripAlerts: true }],
+      { configured: true, sendEmail: slow, waitMs: 20, onLateResult: (r) => late.push(r) },
+    );
+    assert.deepEqual(result, [{ contactId, status: 'sending' }]);
+    release();
+    await new Promise((resolve) => setTimeout(resolve, 10));
+    assert.deepEqual(late, [{ contactId, status: 'accepted_by_relay' }]);
+  } finally {
+    env.PUBLIC_WEB_URL = previousUrl;
+  }
 });
