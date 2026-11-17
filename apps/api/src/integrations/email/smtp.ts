@@ -23,8 +23,27 @@ function validAddress(value: string): boolean {
   return /^[^\s<>@]+@[^\s<>@]+\.[^\s<>@]+$/.test(value);
 }
 
+/**
+ * Um link só entra em e-mail se for https. A exceção é o desenvolvimento local com
+ * SAFEWALK_SMTP_ALLOW_LOCAL_LINKS=true, que aceita http em localhost para testar o envio de ponta a ponta.
+ */
+export function emailLinkAllowed(value: string): boolean {
+  try {
+    const url = new URL(value);
+    if (url.protocol === 'https:') return true;
+    return (
+      url.protocol === 'http:' &&
+      env.NODE_ENV !== 'production' &&
+      env.SAFEWALK_SMTP_ALLOW_LOCAL_LINKS === 'true' &&
+      (url.hostname === 'localhost' || url.hostname === '127.0.0.1')
+    );
+  } catch {
+    return false;
+  }
+}
+
 export function smtpConfigFromEnvironment(): SmtpConfig | null {
-  if (env.DEMO_MODE === 'true' || !env.PUBLIC_WEB_URL.startsWith('https://')) return null;
+  if (env.DEMO_MODE === 'true' || !emailLinkAllowed(env.PUBLIC_WEB_URL)) return null;
 
   const host = env.SAFEWALK_SMTP_HOST.trim();
   const username = env.SAFEWALK_SMTP_USER;
@@ -100,7 +119,8 @@ function openTlsSocket(config: SmtpConfig): Promise<TLSSocket> {
       servername: config.host,
       rejectUnauthorized: true,
     });
-    socket.setTimeout(12000, () => socket.destroy(new Error('SMTP timeout')));
+    // O relay pode demorar a confirmar a primeira mensagem (filtros do provedor): 25 s de tolerância.
+    socket.setTimeout(25000, () => socket.destroy(new Error('SMTP timeout')));
     const onError = (error: Error) => {
       socket.destroy();
       reject(error);

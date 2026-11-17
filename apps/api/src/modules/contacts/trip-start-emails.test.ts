@@ -1,8 +1,9 @@
 import assert from 'node:assert/strict';
+import { randomUUID } from 'node:crypto';
 import test from 'node:test';
 import { env } from '../../config/env.js';
 import type { TripStartEmailTarget } from './contacts.repository.js';
-import { dispatchTripStartEmails } from './trip-start-emails.js';
+import { dispatchTripStartEmails, invitationEmail, trackingEmail } from './trip-start-emails.js';
 
 const optedInId = '11111111-1111-4111-8111-111111111111';
 const notAcceptedId = '22222222-2222-4222-8222-222222222222';
@@ -115,4 +116,43 @@ test('relay errors are isolated to that contact and never reject trip-start disp
   } finally {
     env.PUBLIC_WEB_URL = previousUrl;
   }
+});
+
+test('e-mail de acompanhamento diz quem começou o trajeto e leva o link no texto e no botão', () => {
+  const url = 'https://safewalk.example/acompanhar/abc';
+  const email = trackingEmail('mae@exemplo.com', url, 'Marina Souza');
+  assert.equal(email.subject, 'Marina começou um trajeto no SafeWalk');
+  assert.ok(email.text.includes(url));
+  assert.ok(email.html?.includes(`href="${url}"`));
+  assert.ok(email.html?.includes('Acompanhar trajeto'));
+  assert.equal(
+    trackingEmail('mae@exemplo.com', url).subject,
+    'Uma pessoa de confiança começou um trajeto no SafeWalk',
+  );
+  assert.ok(!trackingEmail('a@b.com', url, '<b>x</b>').html?.includes('<b>x</b>'));
+});
+
+test('e-mail de convite leva o link do convite', () => {
+  const url = 'https://safewalk.example/convite/abc';
+  const email = invitationEmail('mae@exemplo.com', url, 'Marina');
+  assert.equal(email.subject, 'Marina quer você na rede de apoio do SafeWalk');
+  assert.ok(email.text.includes(url));
+  assert.ok(email.html?.includes('Ver convite'));
+});
+
+test('servidor de e-mail lento não segura o início do trajeto: o contato aparece como enviando', async () => {
+  const [contactId] = [randomUUID()];
+  const late: unknown[] = [];
+  let release: () => void = () => undefined;
+  const slow = () => new Promise<void>((resolve) => (release = resolve));
+  const result = await dispatchTripStartEmails(
+    [contactId],
+    [{ contactId, url: `${env.PUBLIC_WEB_URL}/acompanhar/x`, expiresAt: new Date().toISOString() }],
+    [{ id: contactId, email: 'mae@exemplo.com', accepted: true, emailTripAlerts: true }],
+    { configured: true, sendEmail: slow, waitMs: 20, onLateResult: (r) => late.push(r) },
+  );
+  assert.deepEqual(result, [{ contactId, status: 'sending' }]);
+  release();
+  await new Promise((resolve) => setTimeout(resolve, 10));
+  assert.deepEqual(late, [{ contactId, status: 'accepted_by_relay' }]);
 });

@@ -598,7 +598,8 @@ export function HomeScreen() {
                       : gps.enabled
                         ? 'Aguardando a localização do aparelho.'
                         : 'Área do mapa. Sua localização não está ativada.'}{' '}
-                  Segurança e acessibilidade ainda não avaliadas.
+                  O SafeWalk mostra registros públicos; não avalia nem garante a segurança ou a
+                  acessibilidade de um caminho.
                 </AppText>
                 <ErrorNotice error={gps.error ?? urban.error} />
                 {urban.isPending && <ActivityIndicator color={c.primary} />}

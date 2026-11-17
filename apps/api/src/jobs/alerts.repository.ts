@@ -1,10 +1,12 @@
 import type { RowDataPacket } from 'mysql2';
 import { databaseNow, transaction } from '../database/pool.js';
 import { nextAlertState, shareLinkExpiry } from '../domain/trip-state.js';
+import { unansweredAlertEvent } from '../domain/simulated-integrations.js';
 import {
   addEvent,
   extendShareLinks,
   recordCameraRequest,
+  tripUsesSimulatedIntegrations,
   type TripRow,
 } from '../modules/trips/trips.repository.js';
 import { enqueueContactAlerts } from '../modules/contact-alerts/contact-alerts.repository.js';
@@ -76,14 +78,17 @@ export async function advanceDueAlerts(): Promise<number> {
           row.id,
         ]);
         await extendShareLinks(db, row.id, shareLinkExpiry(now, row.expected_arrival_at));
-        // No answer to the check-in (stop, deviation, delay, lost signal): ask the cameras.
+        // No answer to the check-in (stop, deviation, delay, lost signal). The demonstration
+        // also records the simulated camera request; a real trip records nothing for it.
         await recordCameraRequest(db, row, now, row.alert_reason ?? 'late');
         await enqueueContactAlerts(db, row.id, row.alert_reason ?? 'late', now);
       }
       await addEvent(
         db,
         row.id,
-        next === 'alerted' ? 'contacts_alert_queued' : 'gcm_escalation_simulated',
+        next === 'alerted'
+          ? 'contacts_alert_queued'
+          : unansweredAlertEvent(await tripUsesSimulatedIntegrations(db, row)),
         { externalMessagesSent: false },
       );
       changed++;

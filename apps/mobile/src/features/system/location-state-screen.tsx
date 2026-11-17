@@ -5,44 +5,51 @@ import { Protected, Screen } from '@/components/layout/screen';
 import { AppText, Badge, Button, Card, ErrorNotice, Icon } from '@/components/ui/primitives';
 import { useTheme } from '@/theme/theme-provider';
 import { useTrips, useRequestAlert } from '@/features/trips/use-trips';
+import { isDemonstrationTrip } from '@/features/trips/demonstration';
+import { useAuth } from '@/features/auth/auth-provider';
 import { createLocationStateStyles } from './location-state.styles';
 
 type Kind = 'gps' | 'permission' | 'contacts';
-const content = {
-  gps: {
-    icon: 'map-pin' as const,
-    title: 'Perdemos sua localização',
-    description:
-      'O acompanhamento mostra a última posição recebida e o horário dela. Quando o GPS não envia uma posição nova, o mapa não avança sozinho.',
-    steps: [
-      'Vá para um lugar mais aberto, longe de túneis.',
-      'Confira se a localização e os dados móveis estão ligados.',
-      'Se houver um trajeto ativo, o SOS usa a última posição salva. O envio externo continua simulado.',
-    ],
-  },
-  permission: {
-    icon: 'navigation' as const,
-    title: 'Localização desativada',
-    description:
-      'Você pode revisar a permissão de localização. No navegador, o acompanhamento depende da página ativa; a tela bloqueada exige o aplicativo nativo e validação no aparelho.',
-    steps: [
-      'Abra os Ajustes do celular.',
-      'Toque em SafeWalk › Localização.',
-      'Revise a localização precisa. A opção Sempre depende da versão e da configuração do aparelho.',
-    ],
-  },
-  contacts: {
-    icon: 'users' as const,
-    title: 'Ninguém vai acompanhar esta rota',
-    description:
-      'Sem contatos escolhidos e com convite aceito, ninguém recebe um link para ver sua caminhada. A demonstração não aciona uma central real.',
-    steps: [
-      'Adicione até 5 pessoas de confiança.',
-      'Compartilhe o convite com quem ainda não tem o aplicativo.',
-      'Cada contato precisa aceitar antes de acompanhar uma rota.',
-    ],
-  },
-};
+function contentFor(demo: boolean) {
+  return {
+    gps: {
+      icon: 'map-pin' as const,
+      title: 'Perdemos sua localização',
+      description:
+        'O acompanhamento mostra a última posição recebida e o horário dela. Quando o GPS não envia uma posição nova, o mapa não avança sozinho.',
+      steps: [
+        'Vá para um lugar mais aberto, longe de túneis.',
+        'Confira se a localização e os dados móveis estão ligados.',
+        demo
+          ? 'Se houver um trajeto ativo, o SOS usa a última posição salva. O envio externo continua simulado.'
+          : 'Se houver um trajeto ativo, o SOS avisa os contatos escolhidos com a última posição salva. Em emergência, ligue 190.',
+      ],
+    },
+    permission: {
+      icon: 'navigation' as const,
+      title: 'Localização desativada',
+      description:
+        'Você pode revisar a permissão de localização. No navegador, o acompanhamento depende da página ativa; a tela bloqueada exige o aplicativo nativo e validação no aparelho.',
+      steps: [
+        'Abra os Ajustes do celular.',
+        'Toque em SafeWalk › Localização.',
+        'Revise a localização precisa. A opção Sempre depende da versão e da configuração do aparelho.',
+      ],
+    },
+    contacts: {
+      icon: 'users' as const,
+      title: 'Ninguém vai acompanhar esta rota',
+      description: demo
+        ? 'Sem contatos escolhidos e com convite aceito, ninguém recebe um link para ver sua caminhada. A demonstração não aciona uma central real.'
+        : 'Sem contatos escolhidos e com convite aceito, ninguém recebe um link para ver sua caminhada. O SafeWalk não aciona a polícia: em emergência, ligue 190.',
+      steps: [
+        'Adicione até 5 pessoas de confiança.',
+        'Compartilhe o convite com quem ainda não tem o aplicativo.',
+        'Cada contato precisa aceitar antes de acompanhar uma rota.',
+      ],
+    },
+  };
+}
 
 export function LocationStateScreen({ kind }: { kind: Kind }) {
   const { colors } = useTheme();
@@ -52,7 +59,9 @@ export function LocationStateScreen({ kind }: { kind: Kind }) {
   const active = trips.data?.find((trip) => !['arrived', 'cancelled'].includes(trip.status));
   const alert = useRequestAlert(active?.id ?? '');
   const [error, setError] = useState<Error | null>(null);
-  const item = content[kind];
+  const { session } = useAuth();
+  const demo = isDemonstrationTrip(active, session?.user);
+  const item = contentFor(demo)[kind];
   return (
     <Protected>
       <Screen title={kind === 'contacts' ? 'Contatos de segurança' : 'Localização'}>
@@ -78,7 +87,9 @@ export function LocationStateScreen({ kind }: { kind: Kind }) {
                 label={
                   active.route
                     ? 'Última posição GPS recebida'
-                    : 'Posição ilustrativa da demonstração'
+                    : demo
+                      ? 'Posição ilustrativa da demonstração'
+                      : 'Última posição recebida'
                 }
               />
             </Card>
@@ -141,7 +152,7 @@ export function LocationStateScreen({ kind }: { kind: Kind }) {
               <Button label="Tentar de novo" onPress={() => router.push('/permissoes')} />
               {active ? (
                 <Button
-                  label="Pedir ajuda (SOS de demonstração)"
+                  label={demo ? 'Pedir ajuda (SOS de demonstração)' : 'Pedir ajuda com SOS'}
                   variant="danger"
                   loading={alert.isPending}
                   onPress={() =>

@@ -18,7 +18,7 @@ export function AccountDeletedScreen() {
         <AppText variant="subtitle">Exclusão em até 15 dias</AppText>
         <AppText tone="muted">
           Perfil, PIN, preferências, histórico, contatos e relatos serão removidos pelo processador
-          de privacidade. Não há opção de restaurar a conta nesta versão.
+          de privacidade. A conta não pode ser restaurada.
         </AppText>
       </Card>
       <Button label="Voltar ao início" onPress={() => router.replace('/boas-vindas')} />

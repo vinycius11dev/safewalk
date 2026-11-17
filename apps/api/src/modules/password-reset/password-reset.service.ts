@@ -10,6 +10,7 @@ import {
 import { hashSecret } from '../../domain/security.js';
 import {
   sendSafeWalkEmail,
+  emailLinkAllowed,
   smtpConfigFromEnvironment,
   type SafeWalkEmail,
 } from '../../integrations/email/smtp.js';
@@ -56,7 +57,7 @@ export async function requestPasswordReset(
   if ((await tokens.countRecentResetRequests(kind, account.id)) >= PASSWORD_RESET_REQUESTS_PER_HOUR)
     return generic;
 
-  const canEmail = smtpConfigFromEnvironment() !== null && siteFor(kind).startsWith('https://');
+  const canEmail = smtpConfigFromEnvironment() !== null && emailLinkAllowed(siteFor(kind));
   // Sem SMTP fora de produção, o link volta na resposta para o fluxo poder ser testado localmente.
   const preview = !canEmail && env.NODE_ENV !== 'production';
   if (!canEmail && !preview) {

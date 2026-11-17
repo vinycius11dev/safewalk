@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Protected, Screen } from '@/components/layout/screen';
-import { AppText, Badge, Button, Card, Icon, useUiStyles } from '@/components/ui/primitives';
+import { AppText, Button, Card, Icon, useUiStyles } from '@/components/ui/primitives';
 import { useMapJourney } from '@/features/maps/use-map-journey';
 import { LocationStateScreen } from '@/features/system/location-state-screen';
 import { useTheme } from '@/theme/theme-provider';
@@ -33,7 +33,10 @@ export function NoContactsScreen() {
               ? `${durationLabel(route.durationMinutes)} · ${(route.distanceMeters / 1000).toLocaleString('pt-BR', { maximumFractionDigits: 2 })} km estimados`
               : 'Rota de pedestres · cálculo pendente'}
           </AppText>
-          <Badge label="Risco e acessibilidade não avaliados" />
+          <AppText variant="small" tone="muted">
+            O SafeWalk mostra registros públicos; não avalia nem garante a segurança ou a
+            acessibilidade de um caminho.
+          </AppText>
         </Card>
         <AppText tone="muted">
           Sem um contato selecionado com convite aceito, ninguém recebe acesso para acompanhar esta

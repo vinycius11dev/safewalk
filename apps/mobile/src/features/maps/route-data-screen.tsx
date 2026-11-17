@@ -54,10 +54,10 @@ export function RouteDataScreen() {
                 </AppText>
               </Card>
             </View>
-            <Badge label="Segurança e acessibilidade não avaliadas" tone="warning" />
             <AppText tone="muted">
-              Os registros abaixo ajudam a conhecer o entorno. Não comprovam a condição atual do
-              piso ou se o caminho pode ser percorrido.
+              O SafeWalk mostra registros públicos; não avalia nem garante a segurança ou a
+              acessibilidade de um caminho. Os registros abaixo ajudam a conhecer o entorno, mas não
+              comprovam a condição atual do piso ou se o caminho pode ser percorrido.
             </AppText>
             <Card>
               <AppText variant="subtitle">Como o caminho foi calculado</AppText>

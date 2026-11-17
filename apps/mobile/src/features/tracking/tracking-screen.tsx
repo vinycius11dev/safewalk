@@ -94,6 +94,7 @@ export function TrackingScreen() {
   const { trip, travelerName } = query.data;
   const duress = query.data.duress;
   const realRoute = query.data.route?.simulated === false ? query.data.route : null;
+  const demoRoute = query.data.route?.simulated === true ? query.data.route : null;
   const timerTrip = trip.mode === 'timer';
   const alert =
     Boolean(duress) || ['checkin_pending', 'alerted', 'escalated'].includes(trip.status);
@@ -255,6 +256,20 @@ export function TrackingScreen() {
               mostrada pode estar desatualizada.
             </AppText>
           )}
+          {query.data.reroutedAt && realRoute && (
+            <View style={s.rerouteNotice}>
+              <Icon name="corner-up-right" color={colors.primaryText} />
+              <View style={ui.grow}>
+                <AppText variant="subtitle">
+                  Rota recalculada às {localTime(query.data.reroutedAt)}
+                </AppText>
+                <AppText variant="small" tone="muted">
+                  {travelerName} saiu do caminho planejado e o app calculou outro caminho para o
+                  mesmo destino. A chegada prevista foi atualizada.
+                </AppText>
+              </View>
+            </View>
+          )}
           {query.data.wheelchairShared && (
             <View style={s.wheelchairNotice}>
               <MaterialCommunityIcons
@@ -302,26 +317,17 @@ export function TrackingScreen() {
                       : 'rota mais rápida · demonstração'}
               </AppText>
             </View>
-            <Badge
-              label={
-                alert
-                  ? 'Alerta'
-                  : realRoute
-                    ? 'Risco desconhecido'
-                    : timerTrip
-                      ? 'Risco desconhecido'
-                      : `Risco ${query.data.route?.riskLabel ?? 'desconhecido'}`
-              }
-              tone={
-                alert
-                  ? 'danger'
-                  : realRoute || timerTrip
-                    ? 'neutral'
-                    : trip.routeKind === 'safer'
-                      ? 'success'
-                      : 'warning'
-              }
-            />
+            {alert ? (
+              <Badge label="Alerta" tone="danger" />
+            ) : (
+              // Only the illustrative demonstration route carries an example risk label.
+              demoRoute && (
+                <Badge
+                  label={`Risco ${demoRoute.riskLabel}`}
+                  tone={trip.routeKind === 'safer' ? 'success' : 'warning'}
+                />
+              )
+            )}
           </View>
           <AppText tone="muted">
             Chegada prevista {localTime(trip.expectedArrivalAt)} ·{' '}

@@ -64,6 +64,7 @@ export async function getTracking(token: string): Promise<TrackingView> {
     acknowledged: Boolean(row.acknowledged_at),
     duress: row.duress_at ? { usedAt: row.duress_at.toISOString() } : null,
     wheelchairShared: Boolean(row.wheelchair_shared),
+    reroutedAt: row.rerouted_at ? row.rerouted_at.toISOString() : null,
     simulatedIntegrations: true,
   };
 }

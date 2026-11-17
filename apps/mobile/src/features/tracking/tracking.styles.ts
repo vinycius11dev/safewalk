@@ -43,6 +43,14 @@ export const createTrackingStyles = (c: Colors) =>
       padding: 14,
       borderRadius: 14,
     },
+    rerouteNotice: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+      gap: 10,
+      backgroundColor: c.raised,
+      padding: 14,
+      borderRadius: 14,
+    },
     cameraCard: { backgroundColor: c.raised, padding: 14, borderRadius: 14, gap: 12 },
     eta: { fontFamily: fonts.extrabold, fontSize: 29, lineHeight: 36 },
     acknowledged: {

@@ -103,6 +103,8 @@ export function NotificationScreen() {
         </Pressable>
         <ErrorNotice error={alert.error} />
         <SosButton
+          demonstration
+          contactCount={trip.data.contactIds.length}
           loading={alert.isPending}
           onActivate={() =>
             alert.mutate('manual', {

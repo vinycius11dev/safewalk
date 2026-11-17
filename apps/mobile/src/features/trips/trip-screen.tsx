@@ -12,9 +12,12 @@ import { tripTarget } from './trip-navigation';
 import { SosButton } from './sos-button';
 import { RealTripScreen } from './real-trip-screen';
 import { TimerTripScreen } from './timer-trip-screen';
+import { useAuth } from '@/features/auth/auth-provider';
+import { isDemonstrationTrip } from './demonstration';
 
 export function TripScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const { session } = useAuth();
   const trip = useTrip(id);
   const alert = useRequestAlert(id);
   const position = useUpdatePosition(id);
@@ -66,6 +69,7 @@ export function TripScreen() {
       <Protected>
         <TimerTripScreen
           trip={trip.data}
+          demonstration={isDemonstrationTrip(trip.data, session?.user)}
           onAlert={() => trigger('manual')}
           alertPending={alert.isPending}
           error={alert.error ?? trip.error}
@@ -79,6 +83,7 @@ export function TripScreen() {
         <RealTripScreen
           trip={trip.data}
           route={trip.data.route}
+          demonstration={isDemonstrationTrip(trip.data, session?.user)}
           onAlert={() => trigger('manual')}
           alertPending={alert.isPending}
           error={alert.error ?? trip.error}
@@ -126,7 +131,12 @@ export function TripScreen() {
               <Icon name="plus-circle" color={colors.primaryText} />
             </Pressable>
           </View>
-          <SosButton loading={alert.isPending} onActivate={() => trigger('manual')} />
+          <SosButton
+            demonstration
+            contactCount={trip.data.contactIds.length}
+            loading={alert.isPending}
+            onActivate={() => trigger('manual')}
+          />
           <View style={s.footer}>
             <Pressable
               accessibilityRole="button"

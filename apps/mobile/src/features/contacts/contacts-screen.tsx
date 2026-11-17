@@ -79,8 +79,9 @@ export function ContactsScreen() {
           </AppText>
         </Card>
         <AppText variant="small" tone="muted">
-          O envio automático por WhatsApp/SMS ainda não está integrado. Você pode copiar e
-          compartilhar o convite.
+          Por e-mail, o link do trajeto chega automaticamente a quem aceitou o convite e autorizou
+          esse envio. Por WhatsApp ou SMS, o app abre a conversa com a mensagem pronta e você toca
+          em enviar.
         </AppText>
         <Button
           label="Escolher minha rota"

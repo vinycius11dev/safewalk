@@ -20,11 +20,13 @@ import { SosButton } from './sos-button';
 
 export function TimerTripScreen({
   trip,
+  demonstration,
   onAlert,
   alertPending,
   error,
 }: {
   trip: Trip;
+  demonstration: boolean;
   onAlert: () => void;
   alertPending: boolean;
   error: unknown;
@@ -124,7 +126,12 @@ export function TimerTripScreen({
         footer={
           <View style={styles.criticalAction}>
             <ErrorNotice error={error} />
-            <SosButton loading={alertPending} onActivate={onAlert} />
+            <SosButton
+              demonstration={demonstration}
+              contactCount={trip.contactIds.length}
+              loading={alertPending}
+              onActivate={onAlert}
+            />
           </View>
         }
         header={

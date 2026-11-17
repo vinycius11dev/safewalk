@@ -182,7 +182,7 @@ export function ReportScreen() {
                 <AppText variant="label">Enviar ao painel da Prefeitura</AppText>
                 <AppText tone="muted" variant="small">
                   O local exato e a foto vão para o painel da equipe de zeladoria. Seu nome e seu
-                  contato não vão. Painel de demonstração: não é um canal oficial e não abre
+                  contato não vão. O painel é uma demonstração, não um canal oficial, e não abre
                   protocolo no SP156.
                 </AppText>
               </View>

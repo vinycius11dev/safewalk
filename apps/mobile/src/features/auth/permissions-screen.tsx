@@ -2,15 +2,7 @@ import { useState } from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen, Protected } from '@/components/layout/screen';
-import {
-  AppText,
-  Badge,
-  Button,
-  Card,
-  ErrorNotice,
-  Icon,
-  useUiStyles,
-} from '@/components/ui/primitives';
+import { AppText, Button, Card, ErrorNotice, Icon, useUiStyles } from '@/components/ui/primitives';
 import { useAuth } from './auth-provider';
 import { useGeoLocation } from '@/features/location/location-provider';
 import { useMapConsent } from '@/features/maps/use-map-data';
@@ -81,21 +73,11 @@ export function PermissionsScreen() {
           )}
           <Card>
             <Icon name="bell" />
-            <AppText variant="subtitle">Notificações</AppText>
+            <AppText variant="subtitle">Avisos durante o trajeto</AppText>
             <AppText tone="muted">
-              Para avisos de riscos e pedidos de SOS. Nesta versão, os alertas são apresentados
-              dentro do aplicativo.
+              O pedido de check-in e os avisos do caminho, como o de chuva, aparecem na tela com o
+              SafeWalk aberto. Não é preciso autorizar notificações no celular.
             </AppText>
-            <Badge label="Push ainda não integrado" />
-          </Card>
-          <Card>
-            <Icon name="activity" />
-            <AppText variant="subtitle">Movimento e sensores</AppText>
-            <AppText tone="muted">
-              A detecção de queda, corrida e movimento brusco depende da integração com sensores e
-              de validação em aparelho. As situações atuais são simuladas.
-            </AppText>
-            <Badge label="Sensores ainda não integrados" />
           </Card>
           <ErrorNotice error={error} />
           <Button

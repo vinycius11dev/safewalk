@@ -164,22 +164,10 @@ function ContactDetail({ contact, onboarding }: { contact: Contact; onboarding: 
             }}
           />
         </View>
-        <View style={ui.between}>
-          <View style={ui.grow}>
-            <AppText variant="subtitle">Vê minha bateria</AppText>
-            <AppText variant="small" tone="muted">
-              A leitura da bateria ainda não está integrada ao aparelho.
-            </AppText>
-          </View>
-          <Switch
-            accessibilityLabel="Compartilhamento de bateria indisponível"
-            value={false}
-            disabled
-          />
-        </View>
         <AppText variant="small" tone="muted">
-          Recebe o estado de SOS quando escolhido para acompanhar o trajeto. O envio automático de
-          mensagens ainda não está integrado.
+          Quando escolhido para acompanhar, vê o trajeto e o SOS pelo link. Com o e-mail autorizado,
+          o link chega automaticamente; por WhatsApp ou SMS, o app abre a conversa com a mensagem
+          pronta e você toca em enviar.
         </AppText>
       </Card>
       <Card>

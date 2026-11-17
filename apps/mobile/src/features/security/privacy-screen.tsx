@@ -61,15 +61,16 @@ function PrivacyForm({ settings }: { settings: ProfileSettings }) {
           encerrar o trajeto ou ao expirar, em até duas horas.
         </AppText>
       </Card>
-      <Card>
-        <AppText variant="subtitle">Câmeras Smart Sampa (simulação)</AppText>
-        <AppText variant="small" tone="muted">
-          Quando um alerta chega aos contatos, o trajeto registra um pedido simulado de imagens às
-          câmeras próximas: raio de 150 m e horário. Nenhuma câmera é acionada e nenhuma imagem ou
-          biometria é recebida. Uma integração real exigiria acordo com a Prefeitura e seu
-          consentimento específico.
-        </AppText>
-      </Card>
+      {session?.user.demo && (
+        <Card>
+          <AppText variant="subtitle">Câmeras Smart Sampa (simulação)</AppText>
+          <AppText variant="small" tone="muted">
+            Na conta de demonstração, um alerta registra um pedido simulado de imagens às câmeras
+            próximas: raio de 150 m e horário. Nenhuma câmera é acionada e nenhuma imagem ou
+            biometria é recebida.
+          </AppText>
+        </Card>
+      )}
       <AppText style={s.sectionLabel}>APAGAR HISTÓRICO DE ROTAS APÓS</AppText>
       <View style={s.choiceRow}>
         {([7, 30, 90] as const).map((days) => (

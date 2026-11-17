@@ -26,6 +26,7 @@ export function SecurityScreen() {
   const s = useMemo(() => createSecurityStyles(colors), [colors]);
   const ui = useUiStyles();
   const { session, saveSession } = useAuth();
+  const isDemoAccount = session?.user.demo === true;
   const settings = useProfileSettings();
   const save = useProtectedSettingsSave();
   const contacts = useContacts();
@@ -122,7 +123,9 @@ export function SecurityScreen() {
                   {
                     value: 'night',
                     name: 'À noite',
-                    description: 'Ruas iluminadas · câmeras (simulação)',
+                    description: isDemoAccount
+                      ? 'Ruas iluminadas · câmeras (simulação)'
+                      : 'Prefere vias com iluminação mapeada',
                     icon: 'moon',
                   },
                 ] as const
@@ -163,30 +166,38 @@ export function SecurityScreen() {
             )}
             <AppText variant="small" tone="muted">
               Seu perfil fica salvo e muda o cálculo das rotas a pé: idoso ou PCD usa ritmo calmo,
-              sem escadas e com menos ladeiras; criança prefere calçadas; à noite prefere vias
-              iluminadas. Em qualquer perfil, um alerta registra um pedido simulado de imagens às
-              câmeras Smart Sampa próximas. Nada disso certifica acessibilidade ou segurança:
-              verifique as condições do local.
+              evita escadas e ladeiras quando há alternativa; criança prefere calçadas e caminhos de
+              pedestre; à noite prefere vias marcadas como iluminadas no OpenStreetMap. Nada disso
+              certifica acessibilidade ou segurança: verifique as condições do local.
             </AppText>
+            {isDemoAccount && (
+              <AppText variant="small" tone="muted">
+                Na conta de demonstração, um alerta também registra um pedido simulado de imagens às
+                câmeras Smart Sampa próximas.
+              </AppText>
+            )}
             <AppText style={s.sectionLabel}>SOS E DETECÇÃO</AppText>
             <Card>
-              <View style={s.toggleRow}>
-                <View style={s.toggleBody}>
-                  <AppText variant="subtitle">Detecção automática</AppText>
-                  <AppText variant="small" tone="muted">
-                    Parada e desvio nos cenários de demonstração
-                  </AppText>
+              {isDemoAccount && (
+                <View style={s.toggleRow}>
+                  <View style={s.toggleBody}>
+                    <AppText variant="subtitle">Detecção automática</AppText>
+                    <AppText variant="small" tone="muted">
+                      Parada e desvio nos cenários de demonstração
+                    </AppText>
+                  </View>
+                  <Switch
+                    accessibilityLabel="Detecção automática"
+                    value={settings.data.automaticDetection}
+                    disabled={save.isPending}
+                    onValueChange={(value) => {
+                      if (settings.data)
+                        save.submit({ ...settings.data, automaticDetection: value });
+                    }}
+                    trackColor={{ false: colors.border, true: colors.primary }}
+                  />
                 </View>
-                <Switch
-                  accessibilityLabel="Detecção automática"
-                  value={settings.data.automaticDetection}
-                  disabled={save.isPending}
-                  onValueChange={(value) => {
-                    if (settings.data) save.submit({ ...settings.data, automaticDetection: value });
-                  }}
-                  trackColor={{ false: colors.border, true: colors.primary }}
-                />
-              </View>
+              )}
               <View style={s.toggleRow}>
                 <View style={s.toggleBody}>
                   <AppText variant="subtitle">Check-in de chegada</AppText>

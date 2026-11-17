@@ -28,6 +28,7 @@ export function HistoryScreen() {
       (sum, trip) => sum + (trip.mode === 'route' ? (trip.route?.distanceMeters ?? 0) / 1000 : 0),
       0,
     ) ?? 0;
+  const hasDemoTrips = trips.data?.some((trip) => trip.mode === 'demo') ?? false;
   return (
     <Protected>
       <Screen title="Histórico de rotas">
@@ -48,8 +49,9 @@ export function HistoryScreen() {
           </View>
         </View>
         <AppText variant="small" tone="muted">
-          Últimos 30 trajetos desta conta. A distância soma os roteiros reais planejados;
-          demonstrações não entram nessa estimativa.
+          {hasDemoTrips
+            ? 'Últimos 30 trajetos desta conta. A distância soma os roteiros reais planejados; demonstrações não entram nessa estimativa.'
+            : 'Últimos 30 trajetos desta conta. A distância soma os roteiros planejados.'}
         </AppText>
         <View style={s.historyFilters}>
           {(
@@ -105,9 +107,11 @@ export function HistoryScreen() {
                 ? `Acompanhamento por tempo · ${durationLabel(Math.max(1, Math.round((Date.parse(trip.expectedArrivalAt) - Date.parse(trip.startedAt)) / 60000)))}`
                 : trip.route
                   ? `${routeModeName(trip.route)} · ${durationLabel(trip.route.durationMinutes)} previstos · ${(trip.route.distanceMeters / 1000).toLocaleString('pt-BR', { maximumFractionDigits: 2 })} km`
-                  : trip.routeKind === 'safer'
-                    ? 'Demonstração · rota mais segura · 17 min previstos'
-                    : 'Demonstração · rota mais rápida · 14 min previstos'}
+                  : trip.mode !== 'demo'
+                    ? 'Trajeto a pé'
+                    : trip.routeKind === 'safer'
+                      ? 'Demonstração · rota mais segura · 17 min previstos'
+                      : 'Demonstração · rota mais rápida · 14 min previstos'}
             </AppText>
             <Button
               label="Ver trajeto"

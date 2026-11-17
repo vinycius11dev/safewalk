@@ -71,6 +71,18 @@ export async function latestContactAlertMessages(
   }));
 }
 
+/** Start of the latest alert that reached the trip contacts; null for a trip without contacts. */
+export async function latestContactAlertStartedAt(
+  db: Executor,
+  tripId: string,
+): Promise<Date | null> {
+  const [rows] = await db.execute<(RowDataPacket & { started_at: Date | null })[]>(
+    'SELECT MAX(alert_started_at) AS started_at FROM contact_alert_messages WHERE trip_id = ?',
+    [tripId],
+  );
+  return rows[0]?.started_at ?? null;
+}
+
 export type ClaimedContactAlert = {
   id: string;
   attempts: number;

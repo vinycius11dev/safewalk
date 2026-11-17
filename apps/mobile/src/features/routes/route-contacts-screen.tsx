@@ -14,6 +14,7 @@ import {
   useUiStyles,
 } from '@/components/ui/primitives';
 import { useContacts } from '@/features/contacts/use-contacts';
+import { useAuth } from '@/features/auth/auth-provider';
 import { useTheme } from '@/theme/theme-provider';
 import { countLabel } from '@/lib/count-label';
 import { createCompanionStyles } from './route-contacts.styles';
@@ -26,6 +27,8 @@ export function RouteContactsScreen() {
     contatos,
   } = useLocalSearchParams<{ destino?: string; rota?: string; contatos?: string }>();
   const contacts = useContacts();
+  const { session } = useAuth();
+  const isDemoAccount = session?.user.demo === true;
   const { journey } = useMapJourney();
   const isRealJourney = Boolean(journey.destination || journey.selectedRoute);
   const route = journey.selectedRoute;
@@ -43,20 +46,34 @@ export function RouteContactsScreen() {
   return (
     <Protected>
       <Screen title="Quem acompanha esta rota">
-        <Card>
-          <AppText variant="heading">
-            {isRealJourney ? journey.originLabel : 'FIAP Paulista · demonstração'} → {destination}
-          </AppText>
-          <AppText tone="muted">
-            {isRealJourney
-              ? route
+        {isRealJourney ? (
+          <Card>
+            <AppText variant="heading">
+              {journey.originLabel} → {destination}
+            </AppText>
+            <AppText tone="muted">
+              {route
                 ? `${routeModeName(route)} · ${durationLabel(route.durationMinutes)} · ${(route.distanceMeters / 1000).toLocaleString('pt-BR', { maximumFractionDigits: 2 })} km estimados`
-                : 'Rota de pedestres · cálculo pendente'
-              : rota === 'faster'
+                : 'Rota de pedestres · cálculo pendente'}
+            </AppText>
+          </Card>
+        ) : isDemoAccount ? (
+          <Card>
+            <AppText variant="heading">FIAP Paulista · demonstração → {destination}</AppText>
+            <AppText tone="muted">
+              {rota === 'faster'
                 ? 'Demonstração · rota mais rápida · 14 min'
                 : 'Demonstração · rota mais segura · 17 min'}
-          </AppText>
-        </Card>
+            </AppText>
+          </Card>
+        ) : (
+          <Card>
+            <AppText variant="heading">Escolha o destino</AppText>
+            <AppText tone="muted">
+              Busque o destino no mapa para ver a rota e o tempo estimado de caminhada.
+            </AppText>
+          </Card>
+        )}
         {contacts.isPending && <ActivityIndicator color={colors.primary} />}
         <ErrorNotice error={contacts.error} />
         {contacts.error && (
@@ -118,8 +135,9 @@ export function RouteContactsScreen() {
         <View style={s.notice}>
           <Icon name="info" color={colors.primaryText} />
           <AppText variant="small" tone="muted" style={ui.grow}>
-            A seleção vale só para esta rota. Nesta versão, apenas os contatos selecionados recebem
-            acesso pelo link. WhatsApp/SMS ainda não são enviados automaticamente.
+            A seleção vale só para esta rota e apenas os contatos selecionados recebem acesso pelo
+            link. Por e-mail, o link chega automaticamente a quem autorizou esse envio. Por WhatsApp
+            ou SMS, o app abre a conversa com a mensagem pronta e você toca em enviar.
           </AppText>
         </View>
         <Badge

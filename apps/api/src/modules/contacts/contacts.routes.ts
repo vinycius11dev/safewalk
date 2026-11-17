@@ -19,6 +19,7 @@ import { createInvitation } from './invitations.repository.js';
 import { sendContactInvitationEmail } from './trip-start-emails.js';
 import { smtpConfigFromEnvironment } from '../../integrations/email/smtp.js';
 import { requirePin } from '../auth/auth.service.js';
+import { findUserById } from '../auth/auth.repository.js';
 import { rateLimit } from 'express-rate-limit';
 
 export const contactsRouter = Router();
@@ -60,7 +61,8 @@ contactsRouter.post('/:id/invitation/email', sensitiveLimit, async (req, res) =>
       .json(tripStartEmailNotificationSchema.parse({ contactId, status: 'not_configured' }));
 
   const invitation = await createInvitation(userId, contactId);
-  const status = await sendContactInvitationEmail(target.email, invitation.url);
+  const owner = await findUserById(userId);
+  const status = await sendContactInvitationEmail(target.email, invitation.url, owner?.name);
   res.status(201).json(tripStartEmailNotificationSchema.parse({ contactId, status }));
 });
 contactsRouter.put('/:id', sensitiveLimit, async (req, res) => {

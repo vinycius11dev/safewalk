@@ -20,7 +20,9 @@ import { mapSettingsRouter } from '../src/modules/map-settings/map-settings.rout
 import { placesRouter } from '../src/modules/places/places.routes.js';
 import { tripsRouter } from '../src/modules/trips/trips.routes.js';
 import { trackingRouter } from '../src/modules/tracking/tracking.routes.js';
+import type { RowDataPacket } from 'mysql2';
 import { advanceDueAlerts } from '../src/jobs/alerts.repository.js';
+import { CAMERA_REQUEST_EVENT } from '../src/modules/trips/trips.repository.js';
 import { processContactAlerts } from '../src/modules/contact-alerts/contact-alerts.service.js';
 import type { SafeWalkEmail } from '../src/integrations/email/smtp.js';
 
@@ -450,6 +452,103 @@ test('modo tempo não tem rota, valida duração e dispara check-in ao final', a
   assert.equal(alerted.cameraRequest?.basis, 'last_position');
   // The automatic alert also queues one message per contact (sent only if authorized).
   assert.equal(alerted.alertMessages.length, alerted.contactIds.length);
+});
+
+const tripEventTypes = async (tripId: string): Promise<string[]> => {
+  const [rows] = await pool.execute<RowDataPacket[]>(
+    'SELECT type FROM trip_events WHERE trip_id = ?',
+    [tripId],
+  );
+  return rows.map((row) => String(row.type));
+};
+/** Moves the escalation deadline to the past and lets the worker step run. */
+async function passEscalationDeadline(tripId: string) {
+  await pool.execute(
+    'UPDATE trips SET escalation_deadline = UTC_TIMESTAMP(3) - INTERVAL 1 SECOND WHERE id = ?',
+    [tripId],
+  );
+  await advanceDueAlerts();
+}
+
+test('conta real em trajeto real não registra câmeras Smart Sampa nem etapa da GCM', async () => {
+  const suffix = randomUUID();
+  const registered = await request('/api/auth/register', undefined, {
+    name: 'Conta sintética sem simulação',
+    email: `sem-simulacao.${suffix}@safewalk.test`,
+    password: `Synthet1c-${suffix}`,
+  });
+  assert.equal(registered.status, 201);
+  const { token, user } = sessionResponseSchema.parse(registered.data);
+  assert.equal(user.demo, false);
+  assert.equal((await request('/api/auth/pin', token, { pin: '1234' }, 'PUT')).status, 204);
+  const contact = await request('/api/contacts', token, {
+    name: 'Contato sintético',
+    phone: '+5511900000042',
+  });
+  assert.equal(contact.status, 201);
+  const contactId = (contact.data as { id: string }).id;
+  // The contact accepted the invitation (done by the contact on the invitation page).
+  await pool.execute('UPDATE contacts SET accepted = TRUE WHERE id = ?', [contactId]);
+  const created = await request('/api/trips', token, {
+    routeKind: 'faster',
+    destination: 'Acompanhamento real por tempo',
+    contactIds: [contactId],
+    timerMinutes: 10,
+  });
+  assert.equal(created.status, 201);
+  const started = startedTripResponseSchema.parse(created.data);
+  assert.equal(started.trip.mode, 'timer');
+  const trackingToken = new URL(started.links[0]!.url).pathname.split('/').at(-1)!;
+  const sos = tripResponseSchema.parse(
+    (await request(`/api/trips/${started.trip.id}/alerts`, token, { reason: 'manual' })).data,
+  );
+  assert.equal(sos.status, 'alerted');
+  assert.equal(sos.cameraRequest, null);
+  // The real alert still reaches the contact: one message queued per chosen contact.
+  assert.equal(sos.alertMessages.length, 1);
+  assert.ok(sos.alertStartedAt);
+  assert.deepEqual(sos.acknowledgedContactIds, []);
+  const tracking = trackingResponseSchema.parse(
+    (await request(`/api/tracking/${trackingToken}`)).data,
+  );
+  assert.equal(tracking.trip.status, 'alerted');
+  assert.equal(tracking.trip.cameraRequest, null);
+  await passEscalationDeadline(started.trip.id);
+  const escalated = tripResponseSchema.parse(
+    (await request(`/api/trips/${started.trip.id}`, token)).data,
+  );
+  assert.equal(escalated.status, 'escalated');
+  assert.equal(escalated.cameraRequest, null);
+  const events = await tripEventTypes(started.trip.id);
+  assert.ok(events.includes('alert_unanswered_by_contacts'));
+  assert.ok(!events.includes('gcm_escalation_simulated'));
+  assert.ok(!events.includes(CAMERA_REQUEST_EVENT));
+  // The owner only reads "a contact confirmed" after the contact really confirms on the link.
+  assert.deepEqual(escalated.acknowledgedContactIds, []);
+  assert.equal(
+    (await request(`/api/tracking/${trackingToken}/acknowledge`, undefined, {})).status,
+    200,
+  );
+  const confirmed = tripResponseSchema.parse(
+    (await request(`/api/trips/${started.trip.id}`, token)).data,
+  );
+  assert.deepEqual(confirmed.acknowledgedContactIds, [contactId]);
+  await request(`/api/trips/${started.trip.id}/finish`, token, { pin: '1234', outcome: 'arrived' });
+});
+
+test('a demonstração mantém as etapas simuladas de câmeras e GCM', async () => {
+  const { token, contactId } = await demoAccount();
+  const { tripId } = await startDemoTrip(token, contactId);
+  const sos = tripResponseSchema.parse(
+    (await request(`/api/trips/${tripId}/alerts`, token, { reason: 'manual' })).data,
+  );
+  assert.equal(sos.cameraRequest?.simulated, true);
+  await passEscalationDeadline(tripId);
+  const events = await tripEventTypes(tripId);
+  assert.ok(events.includes('gcm_escalation_simulated'));
+  assert.ok(events.includes(CAMERA_REQUEST_EVENT));
+  assert.ok(!events.includes('alert_unanswered_by_contacts'));
+  await request(`/api/trips/${tripId}/finish`, token, { pin: '1234', outcome: 'arrived' });
 });
 
 test('locais salvos: tipo único, área de serviço, dono e exportação', async () => {

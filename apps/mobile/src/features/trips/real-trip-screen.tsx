@@ -57,12 +57,14 @@ import { recordIconImages } from '@/components/map/record-icons';
 export function RealTripScreen({
   trip,
   route,
+  demonstration,
   onAlert,
   alertPending,
   error,
 }: {
   trip: Trip;
   route: RealRoute;
+  demonstration: boolean;
   onAlert: () => void;
   alertPending: boolean;
   error: unknown;
@@ -341,7 +343,12 @@ export function RealTripScreen({
         footer={
           <View style={styles.criticalAction}>
             <ErrorNotice error={error} />
-            <SosButton loading={alertPending} onActivate={onAlert} />
+            <SosButton
+              demonstration={demonstration}
+              contactCount={trip.contactIds.length}
+              loading={alertPending}
+              onActivate={onAlert}
+            />
           </View>
         }
         header={

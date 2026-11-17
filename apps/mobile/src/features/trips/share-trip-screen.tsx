@@ -4,7 +4,7 @@ import { Link, useLocalSearchParams } from 'expo-router';
 import { useMutation } from '@tanstack/react-query';
 import * as Clipboard from 'expo-clipboard';
 import { Screen, Protected } from '@/components/layout/screen';
-import { AppText, Badge, Button, Card, ErrorNotice, useUiStyles } from '@/components/ui/primitives';
+import { AppText, Button, Card, ErrorNotice, useUiStyles } from '@/components/ui/primitives';
 import { useAuth } from '@/features/auth/auth-provider';
 import { useContacts } from '@/features/contacts/use-contacts';
 import { tripsService } from './trips.service';
@@ -73,7 +73,10 @@ export function ShareTripScreen() {
           Os contatos com o link válido podem ver a posição enviada e seu telefone cadastrado
           durante o acompanhamento.
         </AppText>
-        <Badge label="Envio automático ainda não integrado" />
+        <AppText variant="small" tone="muted">
+          Quem aceitou o convite e autorizou o e-mail recebe o link automaticamente quando o trajeto
+          começa. Para os demais, use WhatsApp, SMS ou copie o link.
+        </AppText>
         <ErrorNotice error={links.error ?? revoke.error ?? error} />
         <Button
           label={links.data ? 'Gerar novos links' : 'Criar links de acompanhamento'}

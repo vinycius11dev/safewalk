@@ -37,7 +37,7 @@ export function DeleteAccountScreen() {
         </Card>
         <AppText tone="danger">
           A conta será desativada agora. O acompanhamento será encerrado e os dados serão apagados
-          em até 15 dias. Não há opção de restaurar a conta neste aplicativo.
+          em até 15 dias. A conta não pode ser restaurada.
         </AppText>
         <Button
           label="Baixar meus dados antes"

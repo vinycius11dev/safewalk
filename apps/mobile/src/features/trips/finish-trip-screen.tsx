@@ -61,9 +61,13 @@ export function FinishTripScreen() {
             Saída às {localTime(trip.data.startedAt)} ·{' '}
             {trip.data.route
               ? 'Rota real a pé'
-              : trip.data.routeKind === 'safer'
-                ? 'Rota mais segura · demonstração'
-                : 'Rota mais rápida · demonstração'}
+              : trip.data.mode === 'timer'
+                ? 'Acompanhamento por tempo'
+                : trip.data.mode !== 'demo'
+                  ? 'Trajeto a pé'
+                  : trip.data.routeKind === 'safer'
+                    ? 'Rota mais segura · demonstração'
+                    : 'Rota mais rápida · demonstração'}
           </AppText>
           <AppText variant="small" tone="muted">
             Ao encerrar, os links perdem acesso à sua localização. Seu PIN será solicitado na

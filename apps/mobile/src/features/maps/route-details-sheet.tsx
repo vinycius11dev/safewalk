@@ -229,7 +229,7 @@ export function RouteDetailsSheet({
                           available: 'Dados disponíveis · cobertura parcial',
                           stale: 'Atualização vencida',
                           unavailable: 'Fonte indisponível nesta consulta',
-                          not_configured: 'Fonte ainda não integrada',
+                          not_configured: 'Fonte não configurada',
                         }[source.status]
                       }
                     </AppText>

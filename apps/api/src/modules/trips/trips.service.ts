@@ -27,7 +27,8 @@ export async function startTrip(
       'ROUTING_UNAVAILABLE',
       'O serviço de rotas ainda está em configuração.',
     );
-  if (!(await findUserById(userId))?.pin_hash)
+  const owner = await findUserById(userId);
+  if (!owner?.pin_hash)
     throw new AppError(409, 'PIN_REQUIRED', 'Configure seu PIN de segurança antes de sair.');
   // The app must not encourage children to walk alone: the child profile needs an adult's word.
   if ((await getSettings(userId)).walkingProfile === 'child' && input.adultAccompanying !== true)
@@ -37,7 +38,18 @@ export async function startTrip(
       'No perfil criança, o trajeto só começa com um adulto responsável acompanhando. Confirme antes de iniciar.',
     );
   const started = await repository.startTrip(userId, input);
-  const emailNotifications = await sendTripStartEmails(userId, input.contactIds, started.links);
+  const emailNotifications = await sendTripStartEmails(
+    userId,
+    input.contactIds,
+    started.links,
+    owner.name,
+    // Envio que terminou depois da resposta: registra o resultado final no histórico do trajeto.
+    (late) => {
+      void repository
+        .recordTripStartEmailResults(userId, started.trip.id, [late])
+        .catch(() => undefined);
+    },
+  );
   await repository
     .recordTripStartEmailResults(userId, started.trip.id, emailNotifications)
     .catch(() => undefined);
@@ -48,6 +60,8 @@ export async function startTrip(
       route: started.trip.route ?? null,
       cameraRequest: started.trip.cameraRequest ?? null,
       alertMessages: started.trip.alertMessages ?? [],
+      alertStartedAt: started.trip.alertStartedAt ?? null,
+      acknowledgedContactIds: started.trip.acknowledgedContactIds ?? null,
     },
     emailNotifications,
   };

@@ -258,8 +258,8 @@ test('commits the new route snapshot and ETA while keeping contacts and share li
       queries.push(sql);
       if (sql.startsWith('SELECT * FROM trips')) return [[{ ...row }], []];
       if (sql.startsWith('SELECT UTC_TIMESTAMP')) return [[{ now: new Date() }], []];
-      if (sql.startsWith('SELECT contact_id FROM trip_contacts'))
-        return [contactIds.map((contact_id) => ({ contact_id })), []];
+      if (sql.startsWith('SELECT contact_id, acknowledged_at FROM trip_contacts'))
+        return [contactIds.map((contact_id) => ({ contact_id, acknowledged_at: null })), []];
       if (sql.startsWith('SELECT enabled, consent_version FROM map_consents'))
         return [[{ enabled: true, consent_version: mapConsentVersion }], []];
       if (sql.startsWith('UPDATE trips SET route_snapshot')) {
@@ -275,7 +275,7 @@ test('commits the new route snapshot and ETA while keeping contacts and share li
         return [{ affectedRows: 1 }, []];
       }
       // No alert in this trip: no camera request or contact e-mail to read back.
-      if (sql.startsWith('SELECT payload FROM trip_events')) return [[], []];
+      if (sql.startsWith('SELECT e.payload, u.is_demo FROM trip_events')) return [[], []];
       if (sql.includes('FROM contact_alert_messages')) return [[], []];
       throw new Error(`Unexpected query in reroute test: ${sql}`);
     },

@@ -4,7 +4,21 @@ import { AppText, Badge, Button, Icon } from '@/components/ui/primitives';
 import { useTheme } from '@/theme/theme-provider';
 import { createSosButtonStyles } from './sos-button.styles';
 
-export function SosButton({ onActivate, loading }: { onActivate: () => void; loading: boolean }) {
+/**
+ * `demonstration` keeps the simulation badge of the guided tour. On a real trip the dialog says
+ * what the SOS really does, which depends on whether the trip has contacts.
+ */
+export function SosButton({
+  onActivate,
+  loading,
+  contactCount,
+  demonstration = false,
+}: {
+  onActivate: () => void;
+  loading: boolean;
+  contactCount: number;
+  demonstration?: boolean;
+}) {
   const { colors } = useTheme();
   const s = useMemo(() => createSosButtonStyles(colors), [colors]);
   const [holding, setHolding] = useState(false);
@@ -48,10 +62,25 @@ export function SosButton({ onActivate, loading }: { onActivate: () => void; loa
           <View accessibilityViewIsModal style={s.dialog}>
             <Icon name="shield" size={38} color={colors.danger} />
             <AppText variant="title">Ativar o SOS?</AppText>
-            <AppText>
-              Seu estado de alerta ficará disponível para os contatos com acesso ao trajeto.
-            </AppText>
-            <Badge label="Demonstração · sem envio externo ou despacho" tone="warning" />
+            {demonstration ? (
+              <>
+                <AppText>
+                  Seu estado de alerta ficará disponível para os contatos com acesso ao trajeto.
+                </AppText>
+                <Badge label="Demonstração · sem envio externo ou despacho" tone="warning" />
+              </>
+            ) : (
+              <>
+                <AppText>
+                  {contactCount > 0
+                    ? 'O alerta aparece no link de acompanhamento dos contatos deste trajeto. Quem autorizou no convite também recebe um e-mail com o link.'
+                    : 'Este trajeto não tem contatos acompanhando: o alerta fica registrado, mas ninguém é avisado.'}
+                </AppText>
+                <AppText tone="muted">
+                  O SOS não aciona polícia nem SAMU. Em emergência, ligue 190.
+                </AppText>
+              </>
+            )}
             <Button
               label="Ativar SOS"
               variant="danger"

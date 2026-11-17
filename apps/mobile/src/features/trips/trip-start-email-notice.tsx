@@ -7,6 +7,7 @@ export function TripStartEmailNotice({
   notifications: readonly TripStartEmailNotification[];
 }) {
   const accepted = notifications.filter((item) => item.status === 'accepted_by_relay').length;
+  const sending = notifications.filter((item) => item.status === 'sending').length;
   const notConfigured = notifications.filter((item) => item.status === 'not_configured').length;
   const failed = notifications.filter((item) => item.status === 'failed').length;
   const notEnabled = notifications.filter((item) => item.status === 'not_enabled').length;
@@ -14,17 +15,23 @@ export function TripStartEmailNotice({
 
   return (
     <Card>
-      <Badge label="Avisos por e-mail" />
+      <Badge label="Link por e-mail" tone={accepted + sending > 0 ? 'success' : undefined} />
       {accepted > 0 && (
         <AppText variant="small" tone="muted">
-          O servidor de e-mail aceitou o envio para {accepted} contato{accepted === 1 ? '' : 's'}.
-          Isso não confirma a chegada à caixa de entrada.
+          Link de acompanhamento enviado por e-mail para {accepted} contato
+          {accepted === 1 ? '' : 's'}.
+        </AppText>
+      )}
+      {sending > 0 && (
+        <AppText variant="small" tone="muted">
+          Enviando o link de acompanhamento por e-mail para {sending} contato
+          {sending === 1 ? '' : 's'}.
         </AppText>
       )}
       {notConfigured > 0 && (
         <AppText variant="small" tone="muted">
-          O envio automático não está configurado neste servidor. Os links de acompanhamento
-          continuam disponíveis no app.
+          O envio por e-mail não está disponível agora. Compartilhe o link pelo app em Compartilhar
+          trajeto.
         </AppText>
       )}
       {failed > 0 && (
@@ -35,8 +42,8 @@ export function TripStartEmailNotice({
       )}
       {notEnabled > 0 && (
         <AppText variant="small" tone="muted">
-          Contatos sem autorização de e-mail não recebem o aviso. O link de acompanhamento só é
-          enviado a quem aceitou e ativou essa opção.
+          Quem ainda não autorizou o e-mail no convite não recebe o link automaticamente; envie por
+          Compartilhar trajeto.
         </AppText>
       )}
     </Card>

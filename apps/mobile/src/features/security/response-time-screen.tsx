@@ -51,8 +51,8 @@ function ResponseForm({ settings }: { settings: ProfileSettings }) {
       <Card>
         <Icon name="alert-circle" />
         <AppText variant="small" tone="muted">
-          Num SOS manual, o alerta é imediato, sem esperar. Notificações externas continuam
-          simuladas nesta versão.
+          Num SOS manual, o alerta é imediato, sem esperar. Quem autorizou o e-mail recebe o aviso;
+          os demais contatos veem o alerta pelo link do trajeto.
         </AppText>
         <Badge label="Aplica-se aos próximos alertas" />
       </Card>

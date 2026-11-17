@@ -6,7 +6,11 @@ import { AppError } from '../../middleware/errors.js';
 import { cameraImageRequestSchema, realRouteSchema } from '@safewalk/contracts';
 import { cameraImageRequest } from '../../domain/camera-request.js';
 import { routeForContact } from '../../domain/route-request.js';
-import { latestContactAlertMessages } from '../contact-alerts/contact-alerts.repository.js';
+import { usesSimulatedIntegrations } from '../../domain/simulated-integrations.js';
+import {
+  latestContactAlertMessages,
+  latestContactAlertStartedAt,
+} from '../contact-alerts/contact-alerts.repository.js';
 
 export const CAMERA_REQUEST_EVENT = 'smart_sampa_image_request_simulated';
 
@@ -54,7 +58,7 @@ export async function serializeTrip(
   audience: 'owner' | 'contact' = 'owner',
 ): Promise<Trip> {
   const [contacts] = await db.execute<RowDataPacket[]>(
-    'SELECT contact_id FROM trip_contacts WHERE trip_id = ?',
+    'SELECT contact_id, acknowledged_at FROM trip_contacts WHERE trip_id = ?',
     [row.id],
   );
   const disguised =
@@ -64,9 +68,14 @@ export async function serializeTrip(
   // Under coercion the owner's screen may be watched: it never shows the camera request
   // or that the contacts were e-mailed.
   const hideAlertActions = disguised || (audience === 'owner' && row.alert_reason === 'duress');
-  const cameraRequest = hideAlertActions ? null : await latestCameraRequest(db, row.id);
+  const cameraRequest = hideAlertActions ? null : await latestCameraRequest(db, row);
   const alertMessages =
     hideAlertActions || audience !== 'owner' ? [] : await latestContactAlertMessages(db, row.id);
+  // What the owner may know about the alert in course: when it started and who confirmed it.
+  const ownerSeesAlert =
+    audience === 'owner' &&
+    !hideAlertActions &&
+    (row.status === 'alerted' || row.status === 'escalated');
   const route = row.route_snapshot
     ? realRouteSchema.parse(
         typeof row.route_snapshot === 'string'
@@ -97,27 +106,56 @@ export async function serializeTrip(
     contactIds: contacts.map((contact) => String(contact.contact_id)),
     cameraRequest,
     alertMessages,
+    alertStartedAt: ownerSeesAlert
+      ? ((await latestContactAlertStartedAt(db, row.id))?.toISOString() ?? null)
+      : null,
+    acknowledgedContactIds: ownerSeesAlert
+      ? contacts
+          .filter((contact) => contact.acknowledged_at !== null)
+          .map((contact) => String(contact.contact_id))
+      : null,
   };
 }
-async function latestCameraRequest(db: Executor, tripId: string): Promise<Trip['cameraRequest']> {
+/**
+ * Whether the trip belongs to the demonstration (demo-mode trip or demo account), the only place
+ * where the simulated Smart Sampa and GCM steps are recorded.
+ */
+export async function tripUsesSimulatedIntegrations(
+  db: Executor,
+  row: Pick<TripRow, 'mode' | 'user_id'>,
+): Promise<boolean> {
+  if (row.mode === 'demo') return true;
+  const [owners] = await db.execute<RowDataPacket[]>('SELECT is_demo FROM users WHERE id = ?', [
+    row.user_id,
+  ]);
+  return usesSimulatedIntegrations({ mode: row.mode, ownerIsDemo: Boolean(owners[0]?.is_demo) });
+}
+/** Real trips always answer null, even if an older version recorded the simulated request. */
+async function latestCameraRequest(db: Executor, row: TripRow): Promise<Trip['cameraRequest']> {
   const [rows] = await db.execute<RowDataPacket[]>(
-    'SELECT payload FROM trip_events WHERE trip_id = ? AND type = ? ORDER BY created_at DESC LIMIT 1',
-    [tripId, CAMERA_REQUEST_EVENT],
+    'SELECT e.payload, u.is_demo FROM trip_events e JOIN trips t ON t.id = e.trip_id JOIN users u ON u.id = t.user_id WHERE e.trip_id = ? AND e.type = ? ORDER BY e.created_at DESC LIMIT 1',
+    [row.id, CAMERA_REQUEST_EVENT],
   );
   const payload: unknown = rows[0]?.payload;
   if (!payload) return null;
+  if (!usesSimulatedIntegrations({ mode: row.mode, ownerIsDemo: Boolean(rows[0]?.is_demo) }))
+    return null;
   const parsed = cameraImageRequestSchema.safeParse(
     typeof payload === 'string' ? (JSON.parse(payload) as unknown) : payload,
   );
   return parsed.success ? parsed.data : null;
 }
-/** Registers the simulated Smart Sampa image request when an alert reaches the contacts. */
+/**
+ * Registers the simulated Smart Sampa image request when an alert reaches the contacts. Only the
+ * demonstration has it: for a real account on a real trip nothing is recorded.
+ */
 export async function recordCameraRequest(
   db: Executor,
   row: TripRow,
   requestedAt: Date,
   reason: string,
 ): Promise<void> {
+  if (!(await tripUsesSimulatedIntegrations(db, row))) return;
   await addEvent(db, row.id, CAMERA_REQUEST_EVENT, {
     ...cameraImageRequest(requestedAt, {
       startedAt: row.started_at,

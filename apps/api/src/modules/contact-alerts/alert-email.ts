@@ -1,4 +1,5 @@
 import type { TripAlertReason } from '@safewalk/contracts';
+import { brandedEmailLayout, escapeHtml } from '../../integrations/email/layout.js';
 import type { SafeWalkEmail } from '../../integrations/email/smtp.js';
 
 const SAO_PAULO_TIME = new Intl.DateTimeFormat('pt-BR', {
@@ -27,20 +28,35 @@ export function contactAlertEmail(input: {
   linkExpiresAt: Date;
 }): SafeWalkEmail {
   const name = input.travelerName.trim().split(/\s+/)[0] || 'Uma pessoa de confiança';
+  const happened = whatHappened(name, input.reason);
+  const emergency =
+    'Se houver risco imediato, ligue 190 (Polícia Militar). O SafeWalk não aciona a polícia, a GCM nem câmeras.';
+  const expiry = `O link vale até ${SAO_PAULO_TIME.format(input.linkExpiresAt)} (horário de Brasília). Qualquer pessoa com o link pode ver a posição. Não encaminhe esta mensagem.`;
   return {
     to: input.to,
     subject: 'Alerta do SafeWalk: confira agora',
     text: [
-      ...whatHappened(name, input.reason),
+      ...happened,
       '',
       'Abra o acompanhamento para ver a última posição enviada e confirmar que você viu o alerta:',
       input.url,
       '',
-      'Se houver risco imediato, ligue 190 (Polícia Militar). O SafeWalk não aciona a polícia, a GCM nem câmeras.',
+      emergency,
       '',
-      `O link vale até ${SAO_PAULO_TIME.format(input.linkExpiresAt)} (horário de Brasília). Qualquer pessoa com o link pode ver a posição. Não encaminhe esta mensagem.`,
+      expiry,
       '',
       'SafeWalk',
     ].join('\n'),
+    html: brandedEmailLayout({
+      eyebrow: 'Alerta de trajeto',
+      title: `${name} pode precisar de ajuda`,
+      paragraphs: [
+        ...happened.map(escapeHtml),
+        'Abra o acompanhamento para ver a última posição enviada e confirmar que você viu o alerta.',
+        `<strong style="color:#b42318;">${escapeHtml(emergency)}</strong>`,
+      ],
+      action: { label: 'Ver alerta agora', url: input.url, tone: 'danger' },
+      footer: expiry,
+    }),
   };
 }

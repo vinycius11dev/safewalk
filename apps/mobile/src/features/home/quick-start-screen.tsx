@@ -274,7 +274,8 @@ export function QuickStartScreen() {
                   {routeContextText(route)}
                 </AppText>
                 <AppText variant="small" tone="muted">
-                  Segurança e acessibilidade não avaliadas.
+                  O SafeWalk mostra registros públicos; não avalia nem garante a segurança ou a
+                  acessibilidade de um caminho.
                 </AppText>
                 <Button
                   label="Ver rotas e escolher modo de transporte"

@@ -26,6 +26,8 @@ const baseSchema = z.object({
   SAFEWALK_SMTP_PASSWORD: z.string().default(''),
   SAFEWALK_SMTP_FROM: z.string().trim().default(''),
   SAFEWALK_SMTP_SECURE: booleanText.default('false'),
+  /** Só para desenvolvimento: aceita enviar e-mail com link http de localhost. Proibido em produção. */
+  SAFEWALK_SMTP_ALLOW_LOCAL_LINKS: booleanText.default('false'),
   SAFEWALK_REPORT_PHOTO_DIR: z.string().trim().default(''),
   PHOTON_BASE_URL: z.string().trim().default(''),
   VALHALLA_BASE_URL: z.string().trim().default(''),
@@ -43,6 +45,11 @@ const schema = baseSchema.superRefine((value, context) => {
   if (value.DB_PASSWORD.includes(PLACEHOLDER_MARKER))
     reject('DB_PASSWORD', 'Em produção, DB_PASSWORD não pode ser o valor de exemplo.');
   if (value.DEMO_MODE === 'true') reject('DEMO_MODE', 'Em produção, DEMO_MODE deve ser false.');
+  if (value.SAFEWALK_SMTP_ALLOW_LOCAL_LINKS === 'true')
+    reject(
+      'SAFEWALK_SMTP_ALLOW_LOCAL_LINKS',
+      'Em produção, SAFEWALK_SMTP_ALLOW_LOCAL_LINKS deve ser false: e-mails só levam links https.',
+    );
   if (value.ALERT_WORKER_ENABLED !== 'true')
     reject(
       'ALERT_WORKER_ENABLED',

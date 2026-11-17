@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { env } from '../../config/env.js';
-import { dataBlock, smtpConfigFromEnvironment } from './smtp.js';
+import { dataBlock, emailLinkAllowed, smtpConfigFromEnvironment } from './smtp.js';
 
 const decodedParts = (block: string) =>
   [
@@ -71,9 +71,11 @@ test('SMTP requires verified TLS configuration and a public HTTPS URL', () => {
     password: env.SAFEWALK_SMTP_PASSWORD,
     from: env.SAFEWALK_SMTP_FROM,
     secure: env.SAFEWALK_SMTP_SECURE,
+    allowLocal: env.SAFEWALK_SMTP_ALLOW_LOCAL_LINKS,
   };
   try {
     env.DEMO_MODE = 'false';
+    env.SAFEWALK_SMTP_ALLOW_LOCAL_LINKS = 'false';
     env.PUBLIC_WEB_URL = 'http://localhost:8081';
     env.SAFEWALK_SMTP_HOST = 'smtp.example';
     env.SAFEWALK_SMTP_USER = 'user';
@@ -106,5 +108,25 @@ test('SMTP requires verified TLS configuration and a public HTTPS URL', () => {
     env.SAFEWALK_SMTP_PASSWORD = previous.password;
     env.SAFEWALK_SMTP_FROM = previous.from;
     env.SAFEWALK_SMTP_SECURE = previous.secure;
+    env.SAFEWALK_SMTP_ALLOW_LOCAL_LINKS = previous.allowLocal;
+  }
+});
+
+test('links http de localhost só entram em e-mail com a opção de desenvolvimento ligada', () => {
+  const previous = { allow: env.SAFEWALK_SMTP_ALLOW_LOCAL_LINKS, node: env.NODE_ENV };
+  try {
+    env.SAFEWALK_SMTP_ALLOW_LOCAL_LINKS = 'false';
+    assert.equal(emailLinkAllowed('https://safewalk.example/acompanhar/x'), true);
+    assert.equal(emailLinkAllowed('http://localhost:8081/acompanhar/x'), false);
+    env.SAFEWALK_SMTP_ALLOW_LOCAL_LINKS = 'true';
+    assert.equal(emailLinkAllowed('http://localhost:8081/acompanhar/x'), true);
+    assert.equal(emailLinkAllowed('http://127.0.0.1:8081/acompanhar/x'), true);
+    assert.equal(emailLinkAllowed('http://exemplo.com/acompanhar/x'), false);
+    assert.equal(emailLinkAllowed('nada'), false);
+    env.NODE_ENV = 'production';
+    assert.equal(emailLinkAllowed('http://localhost:8081/acompanhar/x'), false);
+  } finally {
+    env.SAFEWALK_SMTP_ALLOW_LOCAL_LINKS = previous.allow;
+    env.NODE_ENV = previous.node;
   }
 });

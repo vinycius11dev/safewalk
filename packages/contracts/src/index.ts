@@ -262,6 +262,13 @@ export type Trip = {
   route?: RealRoute | null;
   cameraRequest?: CameraImageRequest | null;
   alertMessages?: ContactAlertMessage[];
+  /** Início do alerta em curso, só para o titular e quando o trajeto tem contatos. */
+  alertStartedAt?: string | null;
+  /**
+   * Contatos que confirmaram ter visto o alerta em curso. Nulo quando não há alerta visível ao
+   * titular (inclusive sob coação) e para quem acompanha pelo link.
+   */
+  acknowledgedContactIds?: string[] | null;
 };
 export type ShareLink = { url: string; expiresAt: string; contactId: string };
 export type TrackingView = {
@@ -272,6 +279,8 @@ export type TrackingView = {
   acknowledged: boolean;
   duress: { usedAt: string } | null;
   wheelchairShared: boolean;
+  /** Última vez em que o app recalculou o caminho depois de um desvio confirmado pelo GPS. */
+  reroutedAt: string | null;
   simulatedIntegrations: true;
 };
 export type Report = ReportInput & {
@@ -322,7 +331,8 @@ export const demoRouteResponseSchema = z.object({
 export const routeResponseSchema = z.union([demoRouteResponseSchema, realRouteSchema]);
 /**
  * Pedido de imagens às câmeras Smart Sampa registrado quando o alerta chega aos contatos.
- * Sempre simulado: nenhuma câmera real é acionada e nenhuma imagem é recebida.
+ * Sempre simulado: nenhuma câmera real é acionada e nenhuma imagem é recebida. Existe só na
+ * demonstração (conta demo ou trajeto demo); em trajeto real de conta real o campo vem nulo.
  */
 export const cameraImageRequestSchema = z.object({
   requestedAt: z.iso.datetime(),
@@ -371,6 +381,8 @@ export const tripResponseSchema = z.object({
   route: realRouteSchema.nullable().default(null),
   cameraRequest: cameraImageRequestSchema.nullable().default(null),
   alertMessages: z.array(contactAlertMessageSchema).default([]),
+  alertStartedAt: z.iso.datetime().nullable().default(null),
+  acknowledgedContactIds: z.array(z.uuid()).nullable().default(null),
 });
 export const shareLinkResponseSchema = z.object({
   url: z.url(),
@@ -383,6 +395,8 @@ export const revokeShareLinkResponseSchema = z.object({
 });
 export const tripStartEmailStatusSchema = z.enum([
   'accepted_by_relay',
+  /** O servidor de e-mail ainda não respondeu; o envio continua depois que o trajeto começa. */
+  'sending',
   'failed',
   'not_configured',
   'not_enabled',
@@ -406,6 +420,7 @@ export const trackingResponseSchema = z.object({
   acknowledged: z.boolean(),
   duress: z.object({ usedAt: z.iso.datetime() }).nullable().default(null),
   wheelchairShared: z.boolean().default(false),
+  reroutedAt: z.iso.datetime().nullable().default(null),
   simulatedIntegrations: z.literal(true),
 });
 export const reportResponseSchema = reportSchema.extend({

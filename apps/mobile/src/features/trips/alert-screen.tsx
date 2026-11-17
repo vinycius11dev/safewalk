@@ -10,7 +10,6 @@ import { PinPad } from '@/features/auth/pin-screen';
 import { useAuth } from '@/features/auth/auth-provider';
 import { useContacts } from '@/features/contacts/use-contacts';
 import { useClock } from '@/hooks/use-clock';
-import { localTime } from '@/lib/time';
 import { useTrip, useCancelAlert, useRequestAlert } from './use-trips';
 import { tripsService } from './trips.service';
 import {
@@ -25,6 +24,19 @@ import { TripUnavailable } from './trip-unavailable';
 import { CAMERA_REQUEST_TITLE, CAMERA_SIMULATION_NOTE } from './camera-request';
 import { CameraRequestSteps } from './camera-request-steps';
 import { contactAlertStatus } from './contact-alert-status';
+import { isDemonstrationTrip } from './demonstration';
+import {
+  alertStatusText,
+  checkinText,
+  confirmationNotice,
+  type ConfirmationNotice,
+} from './alert-texts';
+
+type AlertRow = {
+  title: string;
+  text: string;
+  icon: 'users' | 'shield' | ConfirmationNotice['icon'];
+};
 
 export function CheckinScreen() {
   return <AlertScreen />;
@@ -70,6 +82,9 @@ export function AlertScreen() {
         <Redirect href={tripTarget(trip.data)} />
       </Protected>
     );
+  // Smart Sampa and GCM steps are simulations kept only for the guided demonstration.
+  const demonstration = isDemonstrationTrip(trip.data, session?.user);
+  const confirmation = confirmationNotice(trip.data);
   const checking = trip.data.status === 'checkin_pending';
   const late = trip.data.alertReason === 'late';
   const signalLost = trip.data.alertReason === 'signal_lost';
@@ -120,6 +135,31 @@ export function AlertScreen() {
     0,
     Math.ceil((new Date(trip.data.escalationDeadline ?? now).getTime() - now) / 1000),
   );
+  const contactsRow: AlertRow = {
+    title: 'Alerta disponível no link',
+    text:
+      trip.data.contactIds.length === 1
+        ? '1 contato escolhido pode consultar o alerta e a última posição.'
+        : `${trip.data.contactIds.length} contatos escolhidos podem consultar o alerta e a última posição.`,
+    icon: 'users',
+  };
+  // A real trip lists only what happened: who can see the alert and whether someone confirmed.
+  const alertRows: AlertRow[] = demonstration
+    ? [
+        contactsRow,
+        {
+          title:
+            trip.data.status === 'escalated'
+              ? 'Central GCM · simulação registrada'
+              : 'Escalada aguardando reconhecimento',
+          text:
+            trip.data.status === 'escalated'
+              ? 'O sistema registrou a etapa simulada. Não houve despacho ou atendimento confirmado.'
+              : `Sem reconhecimento de contato, a etapa simulada é registrada após o prazo de ${escalation} s.`,
+          icon: 'shield',
+        },
+      ]
+    : [...(trip.data.contactIds.length > 0 ? [contactsRow] : []), ...(confirmation ? [confirmation] : [])];
   return (
     <Protected>
       <Screen scroll={false}>
@@ -137,9 +177,11 @@ export function AlertScreen() {
               }
               tone="danger"
             />
-            <AppText variant="small" style={s.alertMuted}>
-              Demonstração
-            </AppText>
+            {demonstration && (
+              <AppText variant="small" style={s.alertMuted}>
+                Demonstração
+              </AppText>
+            )}
           </View>
           <View style={s.alertIcon}>
             <Icon name={checking ? 'alert-triangle' : 'shield'} size={42} color={colors.white} />
@@ -147,18 +189,10 @@ export function AlertScreen() {
           <AppText style={s.alertTitle}>{checking ? 'Está tudo bem?' : 'Alerta ativo'}</AppText>
           <AppText style={[s.centered, s.alertMuted]}>
             {checking
-              ? signalLost
-                ? 'Não recebemos sua localização há alguns minutos. Confirme que está em segurança.'
-                : late
-                  ? trip.data.mode === 'timer'
-                    ? 'O tempo do acompanhamento terminou. Confirme que está em segurança.'
-                    : Date.parse(trip.data.expectedArrivalAt) > now
-                      ? `Um atraso de chegada em ${trip.data.destination} foi simulado. A previsão atual é ${localTime(trip.data.expectedArrivalAt)}.`
-                      : `Você ainda não confirmou a chegada em ${trip.data.destination}. A previsão era ${localTime(trip.data.expectedArrivalAt)}.`
-                  : trip.data.alertReason === 'deviation'
-                    ? 'Um desvio do trajeto foi simulado. Confirme que está em segurança.'
-                    : 'Uma parada inesperada foi simulada no seu trajeto. Confirme que está em segurança.'
-              : 'Seu estado de alerta está disponível para os contatos que possuem o link deste trajeto.'}
+              ? checkinText(trip.data, now, demonstration)
+              : demonstration
+                ? 'Seu estado de alerta está disponível para os contatos que possuem o link deste trajeto.'
+                : alertStatusText(trip.data)}
           </AppText>
           {checking ? (
             <>
@@ -176,10 +210,14 @@ export function AlertScreen() {
                 <AppText variant="small" style={s.white}>
                   Contatos
                 </AppText>
-                <Icon name="chevron-right" color={colors.white} />
-                <AppText variant="small" style={s.alertMuted}>
-                  GCM e câmeras · demo
-                </AppText>
+                {demonstration && (
+                  <>
+                    <Icon name="chevron-right" color={colors.white} />
+                    <AppText variant="small" style={s.alertMuted}>
+                      GCM e câmeras · demo
+                    </AppText>
+                  </>
+                )}
               </View>
               <View style={s.pinPanel}>
                 <AppText variant="subtitle" style={s.centered}>
@@ -214,65 +252,49 @@ export function AlertScreen() {
             </>
           ) : (
             <>
-              <View style={s.alertCard}>
-                {[
-                  {
-                    title: 'Alerta disponível no link',
-                    text:
-                      trip.data.contactIds.length === 1
-                        ? '1 contato escolhido pode consultar o alerta e a última posição.'
-                        : `${trip.data.contactIds.length} contatos escolhidos podem consultar o alerta e a última posição.`,
-                    icon: 'users' as const,
-                  },
-                  {
-                    title:
-                      trip.data.status === 'escalated'
-                        ? 'Central GCM · simulação registrada'
-                        : 'Escalada aguardando reconhecimento',
-                    text:
-                      trip.data.status === 'escalated'
-                        ? 'O sistema registrou a etapa simulada. Não houve despacho ou atendimento confirmado.'
-                        : `Sem reconhecimento de contato, a etapa simulada é registrada após o prazo de ${escalation} s.`,
-                    icon: 'shield' as const,
-                  },
-                ].map((item) => (
-                  <View key={item.title} style={s.alertRow}>
-                    <Icon name={item.icon} color={colors.white} />
-                    <View style={s.alertRowBody}>
-                      <AppText variant="label" style={s.white}>
-                        {item.title}
-                      </AppText>
-                      <AppText variant="small" style={s.alertMuted}>
-                        {item.text}
-                      </AppText>
+              {alertRows.length > 0 && (
+                <View style={s.alertCard}>
+                  {alertRows.map((item) => (
+                    <View key={item.title} style={s.alertRow}>
+                      <Icon name={item.icon} color={colors.white} />
+                      <View style={s.alertRowBody}>
+                        <AppText variant="label" style={s.white}>
+                          {item.title}
+                        </AppText>
+                        <AppText variant="small" style={s.alertMuted}>
+                          {item.text}
+                        </AppText>
+                      </View>
                     </View>
-                  </View>
-                ))}
-                <View style={s.alertRow}>
-                  <Icon name="video" color={colors.white} />
-                  <View style={s.alertRowBody}>
-                    <AppText variant="label" style={s.white}>
-                      {CAMERA_REQUEST_TITLE}
-                    </AppText>
-                    <AppText variant="small" style={s.alertMuted}>
-                      {trip.data.cameraRequest
-                        ? 'Os contatos veem estas mesmas etapas no link de acompanhamento.'
-                        : 'O pedido de imagens às câmeras próximas é registrado quando o alerta chega aos contatos.'}{' '}
-                      {CAMERA_SIMULATION_NOTE}
-                    </AppText>
-                  </View>
+                  ))}
+                  {demonstration && (
+                    <View style={s.alertRow}>
+                      <Icon name="video" color={colors.white} />
+                      <View style={s.alertRowBody}>
+                        <AppText variant="label" style={s.white}>
+                          {CAMERA_REQUEST_TITLE}
+                        </AppText>
+                        <AppText variant="small" style={s.alertMuted}>
+                          {trip.data.cameraRequest
+                            ? 'Os contatos veem estas mesmas etapas no link de acompanhamento.'
+                            : 'O pedido de imagens às câmeras próximas é registrado quando o alerta chega aos contatos.'}{' '}
+                          {CAMERA_SIMULATION_NOTE}
+                        </AppText>
+                      </View>
+                    </View>
+                  )}
+                  {demonstration && trip.data.cameraRequest && (
+                    <CameraRequestSteps
+                      request={trip.data.cameraRequest}
+                      now={now}
+                      doneColor={colors.white}
+                      pendingColor={colors.white}
+                      titleStyle={s.white}
+                      detailStyle={s.alertMuted}
+                    />
+                  )}
                 </View>
-                {trip.data.cameraRequest && (
-                  <CameraRequestSteps
-                    request={trip.data.cameraRequest}
-                    now={now}
-                    doneColor={colors.white}
-                    pendingColor={colors.white}
-                    titleStyle={s.white}
-                    detailStyle={s.alertMuted}
-                  />
-                )}
-              </View>
+              )}
               {tripContacts.length > 0 && (
                 <View style={s.alertCard}>
                   <AppText variant="subtitle" style={s.white}>
@@ -296,6 +318,14 @@ export function AlertScreen() {
                             {email.text}
                           </AppText>
                         </View>
+                        {trip.data.acknowledgedContactIds?.includes(contact.id) && (
+                          <View style={s.contactChannelsHeader} accessibilityLiveRegion="polite">
+                            <Icon name="check-circle" size={14} color={colors.white} />
+                            <AppText variant="small" style={[s.white, s.alertRowBody]}>
+                              Confirmou que está acompanhando o alerta.
+                            </AppText>
+                          </View>
+                        )}
                         <View style={s.channelRow}>
                           <Button
                             label="WhatsApp"
@@ -342,8 +372,9 @@ export function AlertScreen() {
             </>
           )}
           <AppText variant="small" style={[s.centered, s.alertMuted]}>
-            Só o e-mail aos contatos que autorizaram é automático. Câmeras e viaturas não são
-            acionadas: o pedido às câmeras Smart Sampa é uma simulação.
+            {demonstration
+              ? 'Só o e-mail aos contatos que autorizaram é automático. Câmeras e viaturas não são acionadas: o pedido às câmeras Smart Sampa é uma simulação.'
+              : 'O SOS não aciona polícia nem SAMU. Em emergência, ligue 190.'}
           </AppText>
           <ErrorNotice error={phoneError ?? trip.error} />
           <Button
