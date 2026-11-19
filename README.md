@@ -30,6 +30,7 @@ Global Solution FIAP 2026.2 · CitizenTech · Engenharia de Software, 3º ano
 - [Telas do app](#-telas-do-app)
 - [Painel da Prefeitura](#painel-da-prefeitura)
 - [Entrega de Mobile Development & IoT](#-entrega-de-mobile-development--iot)
+- [Entrega de IA & Machine Learning](#-entrega-de-ia--machine-learning)
 - [O projeto em números](#-o-projeto-em-números)
 - [Arquitetura](#-arquitetura)
 - [Banco de dados](#-banco-de-dados)
@@ -185,6 +186,24 @@ O relato do cidadão não fica só no app. Quando a pessoa escolhe enviar, ele c
 | **Acessibilidade**        | Rótulos, papéis e estados para leitor de tela em todos os controles, avisos falados (`accessibilityLiveRegion`), tema claro e escuro, "reduzir movimento", áreas de toque de 44 px ou mais, perfil Idoso/PCD e rota para cadeirante sem escadas. |
 | **Aderência ao problema** | Toda a jornada sai do problema da Ficha: rota a pé com os registros do trajeto, contato de confiança acompanhando, SOS e relato à Prefeitura. Nenhum dado pessoal real é usado.                                                                  |
 | **Documentação**          | Este README (Ficha, equipe, prints, como rodar), [detalhes técnicos](docs/detalhes-tecnicos.md), [arquitetura](docs/architecture.md), [roteiro do vídeo](docs/video-mobile.md) e [prompts de IA](prompts.md).                                    |
+
+## 🤖 Entrega de IA & Machine Learning
+
+**Pergunta:** quando um atropelamento acontece em São Paulo, ele tende a ter vítima grave ou fatal? O modelo usa a hora, o dia, o tipo de via, o local e os veículos envolvidos. Os dados são reais e públicos: **Infosiga / Detran-SP**, 29.410 sinistros com pedestre na capital, de 2019 a out/2026.
+
+| Item                             | Onde                                                                                 |
+| -------------------------------- | ------------------------------------------------------------------------------------ |
+| **Notebook executado**           | [`ml/safewalk_ml.ipynb`](ml/safewalk_ml.ipynb)                                       |
+| **Relatório**                    | [`ml/RELATORIO_ML.md`](ml/RELATORIO_ML.md)                                           |
+| **Dados (fonte, link, período)** | [`ml/dados/README.md`](ml/dados/README.md) · CSV processado em `ml/dados/processed/` |
+| **Dependências**                 | [`ml/requirements.txt`](ml/requirements.txt)                                         |
+| **Gráficos e tabelas**           | [`ml/figuras/`](ml/figuras)                                                          |
+
+- **Modelo:** XGBoost.
+- **Divisão:** treino com 2019–2024, teste com 2025–2026.
+- **Busca:** 18 combinações de `max_depth`, `learning_rate` e `n_estimators`, com validação cruzada de 5 dobras só no treino.
+- **Resultado no teste:** ROC-AUC 0,64 (baseline 0,50). Recupera 53% dos casos graves.
+- **Para o cidadão:** à noite, 29% dos atropelamentos são graves ou fatais, contra 19% de dia. O escore entra no SafeWalk como prioridade de aviso, nunca como selo de rua segura.
 
 ## 📊 O projeto em números
 
