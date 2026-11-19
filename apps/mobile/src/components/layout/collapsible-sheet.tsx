@@ -1,5 +1,6 @@
 import {
   useCallback,
+  useEffect,
   useImperativeHandle,
   useMemo,
   useState,
@@ -96,10 +97,13 @@ export function CollapsibleSheet({
   maxHeight = '72%',
   expandLabel = 'Mostrar detalhes',
   collapseLabel = 'Minimizar',
+  onCoverChange,
   ref,
 }: {
   /** `reveal()` abre o painel (se minimizado) e volta ao topo do conteúdo. */
   ref?: Ref<CollapsibleSheetHandle>;
+  /** Altura, em pontos, que o painel cobre na base da tela no estado atual (aberto ou minimizado). */
+  onCoverChange?: (heightPoints: number) => void;
   summary?: ReactNode;
   header?: ReactNode;
   footer?: ReactNode;
@@ -133,6 +137,10 @@ export function CollapsibleSheet({
     (footer === undefined || footerHeight > 0);
   const motion = useMemo(() => createSheetMotionStyles(progress, travel), [progress, travel]);
   const frame = useMemo(() => sheetFrameStyles(maxHeight, footerHeight), [maxHeight, footerHeight]);
+  const cover = measured ? sheetHeight - (collapsed ? travel : 0) : 0;
+  useEffect(() => {
+    if (cover > 0) onCoverChange?.(cover);
+  }, [cover, onCoverChange]);
 
   const settle = useCallback(
     (expand: boolean, velocityPxPerMs = 0) => {

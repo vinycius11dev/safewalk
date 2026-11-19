@@ -208,12 +208,12 @@ test('buildValhallaRequest aplica a preferência de percurso escolhida', () => {
 test('o perfil salvo muda ritmo e caminho e se soma ao critério escolhido', async () => {
   const senior = buildValhallaRequest({ ...input, preference: 'step_free' }, 'pcd');
   assert.deepEqual(senior.costing_options, {
-    pedestrian: { walking_speed: 3.6, use_hills: 0.1, type: 'wheelchair' },
+    pedestrian: { walking_speed: 3.6, use_hills: 0.1, step_penalty: 300, type: 'wheelchair' },
   });
-  // Quem escolhe "Padrão" no perfil idoso ou PCD continua com ritmo calmo, mas aceita escadas.
+  // No perfil idoso ou PCD, mesmo com o critério "Padrão", escadas pesam no caminho escolhido.
   const seniorStandard = buildValhallaRequest(input, 'pcd');
   assert.deepEqual(seniorStandard.costing_options, {
-    pedestrian: { walking_speed: 3.6, use_hills: 0.1 },
+    pedestrian: { walking_speed: 3.6, use_hills: 0.1, step_penalty: 300 },
   });
   const child = buildValhallaRequest(input, 'child') as {
     costing_options: { pedestrian: Record<string, number> };

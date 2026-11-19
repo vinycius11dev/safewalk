@@ -98,6 +98,8 @@ export function RealTripScreen({
   } | null>(null);
   const [cameraFollowing, setCameraFollowing] = useState(true);
   const [bannerBottom, setBannerBottom] = useState<number | null>(null);
+  // Parte da tela coberta pelo painel inferior: a câmera mantém a posição acima dele.
+  const [sheetCover, setSheetCover] = useState(0);
   const now = useClock(5000);
   const conditions = useRouteUrbanContext(route.id, trip.id);
   const urbanData = conditions.data?.data;
@@ -249,6 +251,7 @@ export function RealTripScreen({
           followLocation={Boolean(position) && cameraFollowing}
           followZoom={route.profile === 'auto' ? 16 : 17}
           followBearing={geo.courseDegrees}
+          followPadding={{ top: mapOverlayTop, right: 0, bottom: sheetCover, left: 0 }}
           onFollowLost={() => setCameraFollowing(false)}
           controlsTop={mapOverlayTop + 30}
           attributionTop={mapOverlayTop}
@@ -338,6 +341,7 @@ export function RealTripScreen({
       )}
       <CollapsibleSheet
         initiallyCollapsed
+        onCoverChange={setSheetCover}
         expandLabel="Mais opções"
         collapseLabel="Minimizar"
         footer={

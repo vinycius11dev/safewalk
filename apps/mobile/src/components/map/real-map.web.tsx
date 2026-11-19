@@ -37,6 +37,7 @@ import {
 import type { MapMode, RealMapProps } from './real-map.types';
 import { createWebMapStyle } from './real-map.web.styles';
 import { fitVisibleRoute } from './real-map.camera';
+import { useFollowPadding } from './use-follow-padding';
 import { rainStatusDescription, rainStatusLabel } from './rain-status-copy';
 
 export type { RealMapProps, MapMarker, MapBounds, MapMode, MapRainStatus } from './real-map.types';
@@ -70,6 +71,7 @@ export function RealMap(props: RealMapProps) {
   const centerLongitude = props.center?.longitude;
   const locationLatitude = location?.latitude;
   const locationLongitude = location?.longitude;
+  const followPadding = useFollowPadding(props.followPadding);
   const shouldFitRoute = Boolean(props.fitRoute && (props.route?.length ?? 0) > 1);
 
   useEffect(() => {
@@ -421,6 +423,7 @@ export function RealMap(props: RealMapProps) {
       ...(props.followBearing !== null && props.followBearing !== undefined
         ? { bearing: props.followBearing }
         : {}),
+      ...(followPadding ? { padding: followPadding } : {}),
       duration: 700,
     });
   }, [
@@ -429,6 +432,7 @@ export function RealMap(props: RealMapProps) {
     props.followLocation,
     props.followZoom,
     props.followBearing,
+    followPadding,
     status,
   ]);
 

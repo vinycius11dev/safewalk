@@ -27,6 +27,7 @@ import {
 } from '@maplibre/maplibre-react-native';
 import { AppText, Button, Icon } from '@/components/ui/primitives';
 import { useTheme } from '@/theme/theme-provider';
+import { useFollowPadding } from './use-follow-padding';
 import { createBaseMapStyle, createOverlayLayers } from './real-map.map-style';
 import {
   createMapData,
@@ -95,6 +96,7 @@ export default function NativeRealMap(props: RealMapProps) {
   const centerLongitude = props.center?.longitude;
   const locationLatitude = location?.latitude;
   const locationLongitude = location?.longitude;
+  const followPadding = useFollowPadding(props.followPadding);
   const shouldFitRoute = Boolean(props.fitRoute && (props.route?.length ?? 0) > 1);
   useEffect(() => {
     latest.current = props;
@@ -121,6 +123,7 @@ export default function NativeRealMap(props: RealMapProps) {
       ...(props.followBearing !== null && props.followBearing !== undefined
         ? { bearing: props.followBearing }
         : {}),
+      ...(followPadding ? { padding: followPadding } : {}),
       duration: 700,
     });
   }, [
@@ -129,6 +132,7 @@ export default function NativeRealMap(props: RealMapProps) {
     props.followLocation,
     props.followZoom,
     props.followBearing,
+    followPadding,
     loaded,
   ]);
 

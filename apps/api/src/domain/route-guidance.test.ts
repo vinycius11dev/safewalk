@@ -114,6 +114,13 @@ test('requires three spaced reliable fixes spanning twelve seconds before recalc
   assert.equal(tracker.getSnapshot().offRoute, true);
 });
 
+test('confirms a deviation with GPS every second, as browsers deliver it', () => {
+  const tracker = new RouteGuidanceTracker(route);
+  for (let seconds = 0; seconds <= 13; seconds++)
+    tracker.update(gps(-23.552, -46.64, seconds), 1_800_000_000_000 + seconds * 1000);
+  assert.equal(tracker.getSnapshot().offRoute, true);
+});
+
 test('uses profile-specific outer thresholds before declaring a deviation', () => {
   const pedestrian = new RouteGuidanceTracker(route);
   const auto = new RouteGuidanceTracker({ ...route, profile: 'auto' });

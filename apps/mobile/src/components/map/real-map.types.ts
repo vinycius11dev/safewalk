@@ -51,6 +51,8 @@ export interface RealMapProps {
   followLocation?: boolean;
   followZoom?: number;
   followBearing?: number | null;
+  /** Insets in screen points kept clear while following, so the position stays above a sheet. */
+  followPadding?: { top: number; right: number; bottom: number; left: number };
   onFollowLost?: () => void;
   fitRoute?: boolean;
   /** Insets in screen points for fitting a route around the screen's visible panels. */

@@ -166,9 +166,11 @@ export function SecurityScreen() {
             )}
             <AppText variant="small" tone="muted">
               Seu perfil fica salvo e muda o cálculo das rotas a pé: idoso ou PCD usa ritmo calmo,
-              evita escadas e ladeiras quando há alternativa; criança prefere calçadas e caminhos de
-              pedestre; à noite prefere vias marcadas como iluminadas no OpenStreetMap. Nada disso
-              certifica acessibilidade ou segurança: verifique as condições do local.
+              evita escadas e ladeiras quando há alternativa, mesmo que o caminho fique mais longo,
+              e pesa mais buracos e calçadas com chamado no SP156 ao comparar rotas; criança prefere
+              calçadas e caminhos de pedestre; à noite prefere vias marcadas como iluminadas no
+              OpenStreetMap. Nada disso certifica acessibilidade ou segurança: verifique as
+              condições do local.
             </AppText>
             {isDemoAccount && (
               <AppText variant="small" tone="muted">

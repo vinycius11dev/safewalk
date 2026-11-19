@@ -179,17 +179,16 @@ export class RouteGuidanceTracker {
         this.lastOnRouteAt = 0;
       }
     } else if (match.distanceMeters > this.outerThreshold) {
-      if (
-        !this.lastDeviationAt ||
-        recordedAt - this.lastDeviationAt > MAX_FIX_GAP_MS ||
-        recordedAt - this.lastDeviationAt < MIN_FIX_SPACING_MS
-      ) {
+      if (!this.lastDeviationAt || recordedAt - this.lastDeviationAt > MAX_FIX_GAP_MS) {
         this.deviationStartedAt = recordedAt;
         this.deviationFixes = 1;
-      } else {
+        this.lastDeviationAt = recordedAt;
+      } else if (recordedAt - this.lastDeviationAt >= MIN_FIX_SPACING_MS) {
         this.deviationFixes += 1;
+        this.lastDeviationAt = recordedAt;
       }
-      this.lastDeviationAt = recordedAt;
+      // Fixes closer than MIN_FIX_SPACING_MS (the browser sends about one per second) do not count
+      // and do not restart the confirmation.
       if (
         this.deviationFixes >= REQUIRED_DEVIATION_FIXES &&
         recordedAt - this.deviationStartedAt >= REQUIRED_DEVIATION_SPAN_MS

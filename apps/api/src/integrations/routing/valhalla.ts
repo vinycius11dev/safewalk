@@ -94,6 +94,8 @@ const preferenceNotes: Record<string, string> = {
 
 /** Ritmo de idosos e cadeirantes, cerca de 1 m/s; o provedor usa 5,1 km/h por padrão. */
 export const CALM_WALKING_SPEED_KMH = 3.6;
+/** Penalidade do Valhalla, em segundos, a cada trecho com escada (só influencia a escolha do caminho). */
+export const PCD_STEP_PENALTY_S = 300;
 
 /**
  * Opções de custo do Valhalla por perfil de caminhada salvo na conta.
@@ -101,7 +103,8 @@ export const CALM_WALKING_SPEED_KMH = 3.6;
  * de pedestre, maiores evitam vielas e acessos de garagem.
  */
 export const walkingProfileCosting: Partial<Record<WalkingProfile, Record<string, number>>> = {
-  pcd: { walking_speed: CALM_WALKING_SPEED_KMH, use_hills: 0.1 },
+  // Escadas pesam 5 min cada: o caminho desvia delas sempre que há volta razoável.
+  pcd: { walking_speed: CALM_WALKING_SPEED_KMH, use_hills: 0.1, step_penalty: PCD_STEP_PENALTY_S },
   child: {
     sidewalk_factor: 0.8,
     walkway_factor: 0.8,
@@ -112,7 +115,7 @@ export const walkingProfileCosting: Partial<Record<WalkingProfile, Record<string
 };
 
 const walkingProfileNotes: Partial<Record<WalkingProfile, string>> = {
-  pcd: ' Perfil idoso ou PCD: tempo estimado em ritmo calmo (3,6 km/h) e ladeiras evitadas quando há alternativa, conforme o relevo do provedor.',
+  pcd: ' Perfil idoso ou PCD: tempo estimado em ritmo calmo (3,6 km/h); escadas e ladeiras evitadas quando há alternativa, mesmo que o caminho fique mais longo, conforme o OpenStreetMap e o relevo do provedor.',
   child:
     ' Perfil criança: prefere calçadas e caminhos de pedestre e evita vielas e acessos de garagem, conforme o OpenStreetMap. Travessias não verificadas.',
 };
